@@ -1,0 +1,4 @@
+# Finales de línea uniformes para todo el equipo
+* text=auto eol=lf
+*.png binary
+*.jpg binary

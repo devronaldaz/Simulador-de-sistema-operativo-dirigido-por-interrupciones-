@@ -1,0 +1,24 @@
+{
+  "nombre": "E1 - tres procesos, Round Robin q=4, 3 marcos, LRU",
+  "config": {
+    "planificador": "RR",
+    "quantum": 4,
+    "marcos": 3,
+    "reemplazo": "LRU",
+    "periodo_timer": 1,
+    "latencia_read": 4,
+    "latencia_fallo": 3,
+    "pagina_0_residente_al_admitir": true
+  },
+  "procesos": [
+    { "pid": "P1", "llegada": 0,
+      "guion": ["cpu:0","cpu:0","cpu:0","cpu:0","cpu:1","cpu:1","cpu:1","cpu:1","cpu:1","exit:1"] },
+    { "pid": "P2", "llegada": 0,
+      "guion": ["cpu:0","read:0","cpu:0","cpu:0","cpu:0","exit:0"] },
+    { "pid": "P3", "llegada": 2,
+      "guion": ["cpu:0","syscall:0:getpid","cpu:0","cpu:0","cpu:0","div0:0"] }
+  ],
+  "eventos_externos": [
+    { "tick": 12, "tipo": "NMI" }
+  ]
+}

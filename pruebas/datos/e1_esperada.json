@@ -1,0 +1,767 @@
+{
+ "origen": "docs/herramientas/generar_traza.js",
+ "pasos": [
+  {
+   "paso": 1,
+   "tick": 0,
+   "tipo_paso": "INT",
+   "total": 1,
+   "int_tipo": "SYSCALL",
+   "transicion": null
+  },
+  {
+   "paso": 2,
+   "tick": 0,
+   "tipo_paso": "MEM",
+   "total": 1,
+   "int_tipo": null,
+   "transicion": null
+  },
+  {
+   "paso": 3,
+   "tick": 0,
+   "tipo_paso": "TRANS",
+   "total": 1,
+   "int_tipo": null,
+   "transicion": {
+    "pid": "P1",
+    "de": "NUEVO",
+    "a": "LISTO"
+   }
+  },
+  {
+   "paso": 4,
+   "tick": 0,
+   "tipo_paso": "INT",
+   "total": 2,
+   "int_tipo": "SYSCALL",
+   "transicion": null
+  },
+  {
+   "paso": 5,
+   "tick": 0,
+   "tipo_paso": "MEM",
+   "total": 2,
+   "int_tipo": null,
+   "transicion": null
+  },
+  {
+   "paso": 6,
+   "tick": 0,
+   "tipo_paso": "TRANS",
+   "total": 2,
+   "int_tipo": null,
+   "transicion": {
+    "pid": "P2",
+    "de": "NUEVO",
+    "a": "LISTO"
+   }
+  },
+  {
+   "paso": 7,
+   "tick": 0,
+   "tipo_paso": "TRANS",
+   "total": 2,
+   "int_tipo": null,
+   "transicion": {
+    "pid": "P1",
+    "de": "LISTO",
+    "a": "EJECUTANDO"
+   }
+  },
+  {
+   "paso": 8,
+   "tick": 1,
+   "tipo_paso": "EXEC",
+   "total": 2,
+   "int_tipo": null,
+   "transicion": null
+  },
+  {
+   "paso": 9,
+   "tick": 1,
+   "tipo_paso": "INT",
+   "total": 3,
+   "int_tipo": "TIMER",
+   "transicion": null
+  },
+  {
+   "paso": 10,
+   "tick": 2,
+   "tipo_paso": "EXEC",
+   "total": 3,
+   "int_tipo": null,
+   "transicion": null
+  },
+  {
+   "paso": 11,
+   "tick": 2,
+   "tipo_paso": "INT",
+   "total": 4,
+   "int_tipo": "SYSCALL",
+   "transicion": null
+  },
+  {
+   "paso": 12,
+   "tick": 2,
+   "tipo_paso": "MEM",
+   "total": 4,
+   "int_tipo": null,
+   "transicion": null
+  },
+  {
+   "paso": 13,
+   "tick": 2,
+   "tipo_paso": "TRANS",
+   "total": 4,
+   "int_tipo": null,
+   "transicion": {
+    "pid": "P3",
+    "de": "NUEVO",
+    "a": "LISTO"
+   }
+  },
+  {
+   "paso": 14,
+   "tick": 2,
+   "tipo_paso": "INT",
+   "total": 5,
+   "int_tipo": "TIMER",
+   "transicion": null
+  },
+  {
+   "paso": 15,
+   "tick": 3,
+   "tipo_paso": "EXEC",
+   "total": 5,
+   "int_tipo": null,
+   "transicion": null
+  },
+  {
+   "paso": 16,
+   "tick": 3,
+   "tipo_paso": "INT",
+   "total": 6,
+   "int_tipo": "TIMER",
+   "transicion": null
+  },
+  {
+   "paso": 17,
+   "tick": 4,
+   "tipo_paso": "EXEC",
+   "total": 6,
+   "int_tipo": null,
+   "transicion": null
+  },
+  {
+   "paso": 18,
+   "tick": 4,
+   "tipo_paso": "INT",
+   "total": 7,
+   "int_tipo": "TIMER",
+   "transicion": null
+  },
+  {
+   "paso": 19,
+   "tick": 4,
+   "tipo_paso": "TRANS",
+   "total": 7,
+   "int_tipo": null,
+   "transicion": {
+    "pid": "P1",
+    "de": "EJECUTANDO",
+    "a": "LISTO"
+   }
+  },
+  {
+   "paso": 20,
+   "tick": 4,
+   "tipo_paso": "TRANS",
+   "total": 7,
+   "int_tipo": null,
+   "transicion": {
+    "pid": "P2",
+    "de": "LISTO",
+    "a": "EJECUTANDO"
+   }
+  },
+  {
+   "paso": 21,
+   "tick": 5,
+   "tipo_paso": "EXEC",
+   "total": 7,
+   "int_tipo": null,
+   "transicion": null
+  },
+  {
+   "paso": 22,
+   "tick": 5,
+   "tipo_paso": "INT",
+   "total": 8,
+   "int_tipo": "TIMER",
+   "transicion": null
+  },
+  {
+   "paso": 23,
+   "tick": 6,
+   "tipo_paso": "INT",
+   "total": 9,
+   "int_tipo": "SYSCALL",
+   "transicion": null
+  },
+  {
+   "paso": 24,
+   "tick": 6,
+   "tipo_paso": "TRANS",
+   "total": 9,
+   "int_tipo": null,
+   "transicion": {
+    "pid": "P2",
+    "de": "EJECUTANDO",
+    "a": "BLOQUEADO"
+   }
+  },
+  {
+   "paso": 25,
+   "tick": 6,
+   "tipo_paso": "INT",
+   "total": 10,
+   "int_tipo": "TIMER",
+   "transicion": null
+  },
+  {
+   "paso": 26,
+   "tick": 6,
+   "tipo_paso": "TRANS",
+   "total": 10,
+   "int_tipo": null,
+   "transicion": {
+    "pid": "P3",
+    "de": "LISTO",
+    "a": "EJECUTANDO"
+   }
+  },
+  {
+   "paso": 27,
+   "tick": 7,
+   "tipo_paso": "EXEC",
+   "total": 10,
+   "int_tipo": null,
+   "transicion": null
+  },
+  {
+   "paso": 28,
+   "tick": 7,
+   "tipo_paso": "INT",
+   "total": 11,
+   "int_tipo": "TIMER",
+   "transicion": null
+  },
+  {
+   "paso": 29,
+   "tick": 8,
+   "tipo_paso": "INT",
+   "total": 12,
+   "int_tipo": "SYSCALL",
+   "transicion": null
+  },
+  {
+   "paso": 30,
+   "tick": 8,
+   "tipo_paso": "SCHED",
+   "total": 12,
+   "int_tipo": null,
+   "transicion": null
+  },
+  {
+   "paso": 31,
+   "tick": 8,
+   "tipo_paso": "INT",
+   "total": 13,
+   "int_tipo": "TIMER",
+   "transicion": null
+  },
+  {
+   "paso": 32,
+   "tick": 9,
+   "tipo_paso": "EXEC",
+   "total": 13,
+   "int_tipo": null,
+   "transicion": null
+  },
+  {
+   "paso": 33,
+   "tick": 9,
+   "tipo_paso": "INT",
+   "total": 14,
+   "int_tipo": "TIMER",
+   "transicion": null
+  },
+  {
+   "paso": 34,
+   "tick": 10,
+   "tipo_paso": "EXEC",
+   "total": 14,
+   "int_tipo": null,
+   "transicion": null
+  },
+  {
+   "paso": 35,
+   "tick": 10,
+   "tipo_paso": "INT",
+   "total": 15,
+   "int_tipo": "TIMER",
+   "transicion": null
+  },
+  {
+   "paso": 36,
+   "tick": 10,
+   "tipo_paso": "TRANS",
+   "total": 15,
+   "int_tipo": null,
+   "transicion": {
+    "pid": "P3",
+    "de": "EJECUTANDO",
+    "a": "LISTO"
+   }
+  },
+  {
+   "paso": 37,
+   "tick": 10,
+   "tipo_paso": "INT",
+   "total": 16,
+   "int_tipo": "ES_DMA",
+   "transicion": null
+  },
+  {
+   "paso": 38,
+   "tick": 10,
+   "tipo_paso": "TRANS",
+   "total": 16,
+   "int_tipo": null,
+   "transicion": {
+    "pid": "P2",
+    "de": "BLOQUEADO",
+    "a": "LISTO"
+   }
+  },
+  {
+   "paso": 39,
+   "tick": 10,
+   "tipo_paso": "TRANS",
+   "total": 16,
+   "int_tipo": null,
+   "transicion": {
+    "pid": "P1",
+    "de": "LISTO",
+    "a": "EJECUTANDO"
+   }
+  },
+  {
+   "paso": 40,
+   "tick": 11,
+   "tipo_paso": "INT",
+   "total": 17,
+   "int_tipo": "FALLO_PAG",
+   "transicion": null
+  },
+  {
+   "paso": 41,
+   "tick": 11,
+   "tipo_paso": "MEM",
+   "total": 17,
+   "int_tipo": null,
+   "transicion": null
+  },
+  {
+   "paso": 42,
+   "tick": 11,
+   "tipo_paso": "MEM",
+   "total": 17,
+   "int_tipo": null,
+   "transicion": null
+  },
+  {
+   "paso": 43,
+   "tick": 11,
+   "tipo_paso": "TRANS",
+   "total": 17,
+   "int_tipo": null,
+   "transicion": {
+    "pid": "P1",
+    "de": "EJECUTANDO",
+    "a": "BLOQUEADO"
+   }
+  },
+  {
+   "paso": 44,
+   "tick": 11,
+   "tipo_paso": "INT",
+   "total": 18,
+   "int_tipo": "TIMER",
+   "transicion": null
+  },
+  {
+   "paso": 45,
+   "tick": 11,
+   "tipo_paso": "TRANS",
+   "total": 18,
+   "int_tipo": null,
+   "transicion": {
+    "pid": "P3",
+    "de": "LISTO",
+    "a": "EJECUTANDO"
+   }
+  },
+  {
+   "paso": 46,
+   "tick": 12,
+   "tipo_paso": "EXEC",
+   "total": 18,
+   "int_tipo": null,
+   "transicion": null
+  },
+  {
+   "paso": 47,
+   "tick": 12,
+   "tipo_paso": "INT",
+   "total": 19,
+   "int_tipo": "TIMER",
+   "transicion": null
+  },
+  {
+   "paso": 48,
+   "tick": 12,
+   "tipo_paso": "INT",
+   "total": 20,
+   "int_tipo": "NMI",
+   "transicion": null
+  },
+  {
+   "paso": 49,
+   "tick": 13,
+   "tipo_paso": "INT",
+   "total": 21,
+   "int_tipo": "EXCEPCION",
+   "transicion": null
+  },
+  {
+   "paso": 50,
+   "tick": 13,
+   "tipo_paso": "TRANS",
+   "total": 21,
+   "int_tipo": null,
+   "transicion": {
+    "pid": "P3",
+    "de": "EJECUTANDO",
+    "a": "TERMINADO"
+   }
+  },
+  {
+   "paso": 51,
+   "tick": 13,
+   "tipo_paso": "MEM",
+   "total": 21,
+   "int_tipo": null,
+   "transicion": null
+  },
+  {
+   "paso": 52,
+   "tick": 13,
+   "tipo_paso": "INT",
+   "total": 22,
+   "int_tipo": "TIMER",
+   "transicion": null
+  },
+  {
+   "paso": 53,
+   "tick": 13,
+   "tipo_paso": "TRANS",
+   "total": 22,
+   "int_tipo": null,
+   "transicion": {
+    "pid": "P2",
+    "de": "LISTO",
+    "a": "EJECUTANDO"
+   }
+  },
+  {
+   "paso": 54,
+   "tick": 14,
+   "tipo_paso": "EXEC",
+   "total": 22,
+   "int_tipo": null,
+   "transicion": null
+  },
+  {
+   "paso": 55,
+   "tick": 14,
+   "tipo_paso": "INT",
+   "total": 23,
+   "int_tipo": "TIMER",
+   "transicion": null
+  },
+  {
+   "paso": 56,
+   "tick": 14,
+   "tipo_paso": "INT",
+   "total": 24,
+   "int_tipo": "ES_DMA",
+   "transicion": null
+  },
+  {
+   "paso": 57,
+   "tick": 14,
+   "tipo_paso": "MEM",
+   "total": 24,
+   "int_tipo": null,
+   "transicion": null
+  },
+  {
+   "paso": 58,
+   "tick": 14,
+   "tipo_paso": "TRANS",
+   "total": 24,
+   "int_tipo": null,
+   "transicion": {
+    "pid": "P1",
+    "de": "BLOQUEADO",
+    "a": "LISTO"
+   }
+  },
+  {
+   "paso": 59,
+   "tick": 14,
+   "tipo_paso": "SCHED",
+   "total": 24,
+   "int_tipo": null,
+   "transicion": null
+  },
+  {
+   "paso": 60,
+   "tick": 15,
+   "tipo_paso": "EXEC",
+   "total": 24,
+   "int_tipo": null,
+   "transicion": null
+  },
+  {
+   "paso": 61,
+   "tick": 15,
+   "tipo_paso": "INT",
+   "total": 25,
+   "int_tipo": "TIMER",
+   "transicion": null
+  },
+  {
+   "paso": 62,
+   "tick": 16,
+   "tipo_paso": "EXEC",
+   "total": 25,
+   "int_tipo": null,
+   "transicion": null
+  },
+  {
+   "paso": 63,
+   "tick": 16,
+   "tipo_paso": "INT",
+   "total": 26,
+   "int_tipo": "TIMER",
+   "transicion": null
+  },
+  {
+   "paso": 64,
+   "tick": 17,
+   "tipo_paso": "INT",
+   "total": 27,
+   "int_tipo": "SYSCALL",
+   "transicion": null
+  },
+  {
+   "paso": 65,
+   "tick": 17,
+   "tipo_paso": "TRANS",
+   "total": 27,
+   "int_tipo": null,
+   "transicion": {
+    "pid": "P2",
+    "de": "EJECUTANDO",
+    "a": "TERMINADO"
+   }
+  },
+  {
+   "paso": 66,
+   "tick": 17,
+   "tipo_paso": "MEM",
+   "total": 27,
+   "int_tipo": null,
+   "transicion": null
+  },
+  {
+   "paso": 67,
+   "tick": 17,
+   "tipo_paso": "INT",
+   "total": 28,
+   "int_tipo": "TIMER",
+   "transicion": null
+  },
+  {
+   "paso": 68,
+   "tick": 17,
+   "tipo_paso": "TRANS",
+   "total": 28,
+   "int_tipo": null,
+   "transicion": {
+    "pid": "P1",
+    "de": "LISTO",
+    "a": "EJECUTANDO"
+   }
+  },
+  {
+   "paso": 69,
+   "tick": 18,
+   "tipo_paso": "EXEC",
+   "total": 28,
+   "int_tipo": null,
+   "transicion": null
+  },
+  {
+   "paso": 70,
+   "tick": 18,
+   "tipo_paso": "INT",
+   "total": 29,
+   "int_tipo": "TIMER",
+   "transicion": null
+  },
+  {
+   "paso": 71,
+   "tick": 19,
+   "tipo_paso": "EXEC",
+   "total": 29,
+   "int_tipo": null,
+   "transicion": null
+  },
+  {
+   "paso": 72,
+   "tick": 19,
+   "tipo_paso": "INT",
+   "total": 30,
+   "int_tipo": "TIMER",
+   "transicion": null
+  },
+  {
+   "paso": 73,
+   "tick": 20,
+   "tipo_paso": "EXEC",
+   "total": 30,
+   "int_tipo": null,
+   "transicion": null
+  },
+  {
+   "paso": 74,
+   "tick": 20,
+   "tipo_paso": "INT",
+   "total": 31,
+   "int_tipo": "TIMER",
+   "transicion": null
+  },
+  {
+   "paso": 75,
+   "tick": 21,
+   "tipo_paso": "EXEC",
+   "total": 31,
+   "int_tipo": null,
+   "transicion": null
+  },
+  {
+   "paso": 76,
+   "tick": 21,
+   "tipo_paso": "INT",
+   "total": 32,
+   "int_tipo": "TIMER",
+   "transicion": null
+  },
+  {
+   "paso": 77,
+   "tick": 22,
+   "tipo_paso": "EXEC",
+   "total": 32,
+   "int_tipo": null,
+   "transicion": null
+  },
+  {
+   "paso": 78,
+   "tick": 22,
+   "tipo_paso": "INT",
+   "total": 33,
+   "int_tipo": "TIMER",
+   "transicion": null
+  },
+  {
+   "paso": 79,
+   "tick": 23,
+   "tipo_paso": "INT",
+   "total": 34,
+   "int_tipo": "SYSCALL",
+   "transicion": null
+  },
+  {
+   "paso": 80,
+   "tick": 23,
+   "tipo_paso": "TRANS",
+   "total": 34,
+   "int_tipo": null,
+   "transicion": {
+    "pid": "P1",
+    "de": "EJECUTANDO",
+    "a": "TERMINADO"
+   }
+  },
+  {
+   "paso": 81,
+   "tick": 23,
+   "tipo_paso": "MEM",
+   "total": 34,
+   "int_tipo": null,
+   "transicion": null
+  },
+  {
+   "paso": 82,
+   "tick": 23,
+   "tipo_paso": "INT",
+   "total": 35,
+   "int_tipo": "TIMER",
+   "transicion": null
+  },
+  {
+   "paso": 83,
+   "tick": 23,
+   "tipo_paso": "SCHED",
+   "total": 35,
+   "int_tipo": null,
+   "transicion": null
+  }
+ ],
+ "resumen": {
+  "Q": 4,
+  "ticks": 23,
+  "esperaProm": 7,
+  "retornoProm": 17,
+  "respuestaProm": 2.67,
+  "cambiosCtx": 7,
+  "expropiaciones": 2,
+  "fallos": 1,
+  "reemplazos": 1,
+  "intTotal": 35,
+  "sys": {
+   "TIMER": 23,
+   "ES_DMA": 2,
+   "SYSCALL": 7,
+   "FALLO_PAG": 1,
+   "EXCEPCION": 1,
+   "NMI": 1
+  },
+  "usoCPU": 95.7,
+  "throughput": 0.13
+ }
+}

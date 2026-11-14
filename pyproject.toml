@@ -1,0 +1,18 @@
+[build-system]
+requires = ["setuptools>=61"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "so-interrupt-sim"
+version = "0.1.0"
+description = "Simulador didáctico de sistema operativo dirigido por interrupciones (SI421U, UNI-FIIS)"
+readme = "README.md"
+requires-python = ">=3.10"
+license = { text = "MIT" }
+dependencies = []
+
+[project.scripts]
+so-sim = "simulador.cli:main"
+
+[tool.setuptools]
+packages = ["simulador", "simulador.planificacion", "simulador.memoria"]

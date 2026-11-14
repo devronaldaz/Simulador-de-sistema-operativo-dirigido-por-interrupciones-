@@ -1,0 +1,56 @@
+{
+  "nombre": "S8 - hiperpaginación: 3 procesos alternan dos páginas (comparar --marcos 3 y 6)",
+  "config": {
+    "planificador": "RR",
+    "quantum": 4,
+    "marcos": 3,
+    "reemplazo": "LRU"
+  },
+  "procesos": [
+    {
+      "pid": "P1",
+      "llegada": 0,
+      "guion": [
+        "cpu:0",
+        "cpu:1",
+        "cpu:0",
+        "cpu:1",
+        "cpu:0",
+        "cpu:1",
+        "cpu:0",
+        "cpu:1",
+        "exit:0"
+      ]
+    },
+    {
+      "pid": "P2",
+      "llegada": 0,
+      "guion": [
+        "cpu:0",
+        "cpu:1",
+        "cpu:0",
+        "cpu:1",
+        "cpu:0",
+        "cpu:1",
+        "cpu:0",
+        "cpu:1",
+        "exit:0"
+      ]
+    },
+    {
+      "pid": "P3",
+      "llegada": 0,
+      "guion": [
+        "cpu:0",
+        "cpu:1",
+        "cpu:0",
+        "cpu:1",
+        "cpu:0",
+        "cpu:1",
+        "cpu:0",
+        "cpu:1",
+        "exit:0"
+      ]
+    }
+  ]
+}

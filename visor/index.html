@@ -1,0 +1,57 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Visor del simulador de SO</title>
+  <link rel="stylesheet" href="estilos.css">
+</head>
+<body>
+  <header>
+    <div>
+      <h1>Simulador de SO dirigido por interrupciones</h1>
+      <p id="escenario">Sin traza cargada</p>
+    </div>
+    <label class="cargar">Cargar traza JSON
+      <input type="file" id="archivo" accept=".json,application/json">
+    </label>
+  </header>
+
+  <nav class="controles" aria-label="Controles">
+    <button id="inicio" title="Primer paso (Inicio)">⏮</button>
+    <button id="anterior" title="Paso anterior (←)">◀</button>
+    <button id="siguiente" title="Paso siguiente (→)">▶</button>
+    <button id="fin" title="Último paso (Fin)">⏭</button>
+    <button id="reproducir" title="Reproducir / pausar (espacio)">Reproducir</button>
+    <input type="range" id="barra" min="1" max="1" value="1" aria-label="Paso">
+    <span id="posicion">paso 0/0 · t=0</span>
+  </nav>
+
+  <main>
+    <section class="mapa">
+      <h2>Mapa de estados y transiciones</h2>
+      <svg id="svg-estados" viewBox="0 0 760 360" role="img" aria-label="Mapa de estados de los procesos"></svg>
+      <div id="porque" class="porque">Cargue una traza para comenzar.</div>
+    </section>
+
+    <aside class="paneles">
+      <div class="panel"><h3>CPU</h3><div id="cpu"></div></div>
+      <div class="panel"><h3>Cola de listos</h3><div id="listos" class="fichas"></div></div>
+      <div class="panel"><h3>Cola de espera del disco</h3><div id="disco"></div></div>
+      <div class="panel"><h3>Marcos de memoria</h3><div id="marcos"></div></div>
+      <div class="panel"><h3>Interrupciones (R4)</h3><div id="interrupciones"></div></div>
+    </aside>
+  </main>
+
+  <section class="registro">
+    <h2>Registro de pasos (bitácora)</h2>
+    <div class="tabla"><table>
+      <thead><tr><th>Paso</th><th>t</th><th>Tipo</th><th>Componente</th><th>Antes → después</th><th>Porqué</th></tr></thead>
+      <tbody id="filas"></tbody>
+    </table></div>
+  </section>
+
+  <script src="traza_actual.js" onerror="window.TRAZA = null"></script>
+  <script src="visor.js"></script>
+</body>
+</html>

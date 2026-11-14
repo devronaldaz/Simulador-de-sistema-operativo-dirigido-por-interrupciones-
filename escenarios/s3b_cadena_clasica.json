@@ -1,0 +1,31 @@
+{
+  "nombre": "S3b - cadena clásica 1 2 3 4 1 2 5 1 2 3 4 5 (cambiar --reemplazo y --marcos)",
+  "config": {
+    "planificador": "FCFS",
+    "marcos": 3,
+    "reemplazo": "FIFO",
+    "latencia_fallo": 1,
+    "pagina_0_residente_al_admitir": false
+  },
+  "procesos": [
+    {
+      "pid": "P",
+      "llegada": 0,
+      "guion": [
+        "cpu:1",
+        "cpu:2",
+        "cpu:3",
+        "cpu:4",
+        "cpu:1",
+        "cpu:2",
+        "cpu:5",
+        "cpu:1",
+        "cpu:2",
+        "cpu:3",
+        "cpu:4",
+        "cpu:5",
+        "exit:5"
+      ]
+    }
+  ]
+}
