@@ -1,12 +1,4 @@
-"""Políticas de planificación intercambiables."""
-from .base import Planificador
-from .fcfs import FCFS
-from .rr import RoundRobin
+"""Planificación de corto plazo: registro de algoritmos, planificador y despachador."""
+from .base import ALGORITMOS, Planificador
 
-
-def crear_planificador(nombre: str, quantum: int) -> Planificador:
-    if nombre == "RR":
-        return RoundRobin(quantum)
-    if nombre == "FCFS":
-        return FCFS()
-    raise ValueError(f"planificador desconocido: {nombre}")
+__all__ = ["ALGORITMOS", "Planificador"]

@@ -1,0 +1,88 @@
+{
+  "nombre": "Inanición y aging: B (prioridad 5) frente a un flujo de procesos de prioridad 1 (comparar --aging 0 y 4)",
+  "config": {
+    "planificador": "PRIORIDAD",
+    "aging": 4,
+    "marcos": 4
+  },
+  "procesos": [
+    {
+      "pid": "B",
+      "llegada": 0,
+      "burst": 4,
+      "prioridad": 5
+    },
+    {
+      "pid": "H0",
+      "llegada": 0,
+      "burst": 2,
+      "prioridad": 1
+    },
+    {
+      "pid": "H1",
+      "llegada": 2,
+      "burst": 2,
+      "prioridad": 1
+    },
+    {
+      "pid": "H2",
+      "llegada": 4,
+      "burst": 2,
+      "prioridad": 1
+    },
+    {
+      "pid": "H3",
+      "llegada": 6,
+      "burst": 2,
+      "prioridad": 1
+    },
+    {
+      "pid": "H4",
+      "llegada": 8,
+      "burst": 2,
+      "prioridad": 1
+    },
+    {
+      "pid": "H5",
+      "llegada": 10,
+      "burst": 2,
+      "prioridad": 1
+    },
+    {
+      "pid": "H6",
+      "llegada": 12,
+      "burst": 2,
+      "prioridad": 1
+    },
+    {
+      "pid": "H7",
+      "llegada": 14,
+      "burst": 2,
+      "prioridad": 1
+    },
+    {
+      "pid": "H8",
+      "llegada": 16,
+      "burst": 2,
+      "prioridad": 1
+    },
+    {
+      "pid": "H9",
+      "llegada": 18,
+      "burst": 2,
+      "prioridad": 1
+    },
+    {
+      "pid": "H10",
+      "llegada": 20,
+      "burst": 2,
+      "prioridad": 1
+    },
+    {
+      "pid": "H11",
+      "llegada": 22,
+      "burst": 2,
+      "prioridad": 1
+    }
+  ]
+}

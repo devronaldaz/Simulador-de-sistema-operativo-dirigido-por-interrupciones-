@@ -10,7 +10,7 @@
   <header>
     <div>
       <h1>Simulador de SO dirigido por interrupciones</h1>
-      <p id="escenario">Sin traza cargada</p>
+      <p id="escenario">Sin traza cargada: ejecute <code>python -m simulador ESCENARIO --visor</code> o cargue un JSON.</p>
     </div>
     <label class="cargar">Cargar traza JSON
       <input type="file" id="archivo" accept=".json,application/json">
@@ -23,29 +23,59 @@
     <button id="siguiente" title="Paso siguiente (→)">▶</button>
     <button id="fin" title="Último paso (Fin)">⏭</button>
     <button id="reproducir" title="Reproducir / pausar (espacio)">Reproducir</button>
+    <label>Velocidad
+      <select id="velocidad">
+        <option value="1500">0,5×</option><option value="700" selected>1×</option>
+        <option value="350">2×</option><option value="150">5×</option><option value="40">20×</option>
+      </select>
+    </label>
     <input type="range" id="barra" min="1" max="1" value="1" aria-label="Paso">
     <span id="posicion">paso 0/0 · t=0</span>
   </nav>
 
-  <main>
-    <section class="mapa">
+  <main class="fila">
+    <section class="caja mapa">
       <h2>Mapa de estados y transiciones</h2>
-      <svg id="svg-estados" viewBox="0 0 760 360" role="img" aria-label="Mapa de estados de los procesos"></svg>
+      <svg id="svg-estados" viewBox="0 0 800 380" role="img" aria-label="Mapa de estados de los procesos"></svg>
       <div id="porque" class="porque">Cargue una traza para comenzar.</div>
     </section>
-
-    <aside class="paneles">
-      <div class="panel"><h3>CPU</h3><div id="cpu"></div></div>
-      <div class="panel"><h3>Cola de listos</h3><div id="listos" class="fichas"></div></div>
-      <div class="panel"><h3>Cola de espera del disco</h3><div id="disco"></div></div>
-      <div class="panel"><h3>Marcos de memoria</h3><div id="marcos"></div></div>
-      <div class="panel"><h3>Interrupciones (R4)</h3><div id="interrupciones"></div></div>
+    <aside class="caja">
+      <h2>Flujo de la CPU</h2>
+      <div id="flujo" class="flujo"></div>
+      <h3>Cola de espera del disco</h3><div id="disco"></div>
+      <h3>Interrupciones (R4)</h3><div id="interrupciones"></div>
+      <h3>Métricas en vivo</h3><div id="metricas"></div>
     </aside>
   </main>
 
-  <section class="registro">
+  <section class="caja ancho">
+    <h2>Línea de tiempo <span class="nota">(una fila por proceso; la última fila marca las interrupciones de cada tick)</span></h2>
+    <div id="linea" class="linea"></div>
+    <div class="leyenda" id="leyenda"></div>
+  </section>
+
+  <section class="caja ancho">
+    <h2>Bloques de control de proceso (PCB)</h2>
+    <div class="tabla"><table id="pcb"></table></div>
+  </section>
+
+  <section class="fila">
+    <div class="caja">
+      <h2>Mapa de memoria <span class="nota" id="modo-memoria"></span></h2>
+      <div class="tabla"><table id="mapa"></table></div>
+    </div>
+    <div class="caja">
+      <h2>MMU</h2>
+      <div id="mmu" class="mmu"></div>
+      <h3>Tabla de páginas de <select id="proc-tabla"></select></h3>
+      <div class="tabla"><table id="tabla-paginas"></table></div>
+      <h3>TLB</h3><div id="tlb"></div>
+    </div>
+  </section>
+
+  <section class="caja ancho">
     <h2>Registro de pasos (bitácora)</h2>
-    <div class="tabla"><table>
+    <div class="tabla alto"><table>
       <thead><tr><th>Paso</th><th>t</th><th>Tipo</th><th>Componente</th><th>Antes → después</th><th>Porqué</th></tr></thead>
       <tbody id="filas"></tbody>
     </table></div>

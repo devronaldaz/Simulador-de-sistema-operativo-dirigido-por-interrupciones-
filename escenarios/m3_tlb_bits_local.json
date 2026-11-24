@@ -1,0 +1,42 @@
+{
+  "nombre": "MMU paginada con TLB, bits R y M, marcos del SO y reemplazo local",
+  "config": {
+    "planificador": "RR",
+    "quantum": 3,
+    "marcos": 4,
+    "marcos_so": 2,
+    "tlb": 2,
+    "reemplazo": "CLOCK",
+    "alcance": "local",
+    "latencia_fallo": 2,
+    "latencia_swap": 2
+  },
+  "procesos": [
+    {
+      "pid": "P1",
+      "llegada": 0,
+      "tamano": 12288,
+      "guion": [
+        "cpu:@100",
+        "write:@4200",
+        "cpu:@8300",
+        "cpu:@200",
+        "write:@4300",
+        "cpu:@8400",
+        "exit:@0"
+      ]
+    },
+    {
+      "pid": "P2",
+      "llegada": 0,
+      "tamano": 8192,
+      "guion": [
+        "cpu:@50",
+        "cpu:@4100",
+        "cpu:@60",
+        "cpu:@4200",
+        "exit:@10"
+      ]
+    }
+  ]
+}

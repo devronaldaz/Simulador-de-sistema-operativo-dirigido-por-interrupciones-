@@ -18,17 +18,22 @@ class EntradaIVT:
     rutina: Callable
 
 
+ENTRADAS = [
+    EntradaIVT("2", "NMI", TipoInt.NMI, 0, False, isr.isr_nmi),
+    EntradaIVT("0x20", "IRQ0 timer", TipoInt.TIMER, 1, True, isr.isr_timer),
+    EntradaIVT("0x2E", "IRQ14 disco/DMA", TipoInt.ES_DMA, 3, True, isr.isr_disco),
+    EntradaIVT("0x80", "llamada al sistema", TipoInt.SYSCALL, None, False, isr.isr_syscall),
+    EntradaIVT("14", "fallo de página", TipoInt.FALLO_PAG, None, False, isr.isr_fallo_pagina),
+    EntradaIVT("13", "violación de protección", TipoInt.PROTECCION, None, False, isr.isr_proteccion),
+    EntradaIVT("0", "error de división", TipoInt.EXCEPCION, None, False, isr.isr_excepcion),
+    EntradaIVT("WT", "worst time excedido", TipoInt.WORST_TIME, None, False, isr.isr_worst_time),
+    EntradaIVT("SIG", "señal (kill)", TipoInt.SENAL, None, False, isr.isr_senal),
+]
+
+
 class TablaVectores:
     def __init__(self) -> None:
-        entradas = [
-            EntradaIVT("2", "NMI", TipoInt.NMI, 0, False, isr.isr_nmi),
-            EntradaIVT("0x20", "IRQ0 timer", TipoInt.TIMER, 1, True, isr.isr_timer),
-            EntradaIVT("0x2E", "IRQ14 disco/DMA", TipoInt.ES_DMA, 3, True, isr.isr_disco),
-            EntradaIVT("0x80", "llamada al sistema", TipoInt.SYSCALL, None, False, isr.isr_syscall),
-            EntradaIVT("14", "fallo de página", TipoInt.FALLO_PAG, None, False, isr.isr_fallo_pagina),
-            EntradaIVT("0", "error de división", TipoInt.EXCEPCION, None, False, isr.isr_excepcion),
-        ]
-        self.entradas = {e.vector: e for e in entradas}
+        self.entradas = {e.vector: e for e in ENTRADAS}
 
     def rutina(self, vector: str) -> Callable:
         if vector not in self.entradas:

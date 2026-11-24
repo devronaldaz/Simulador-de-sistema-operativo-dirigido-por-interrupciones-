@@ -1,79 +1,55 @@
 # Simulador de SO dirigido por interrupciones
 
-Simulador didáctico de un sistema operativo que realiza **gestión de procesos y de memoria dirigida por interrupciones**: ningún algoritmo corre por iniciativa propia, cada uno se ejecuta como respuesta a una interrupción mediante su rutina de servicio (ISR). No ejecuta código real: los procesos siguen un *guion* y el programa muestra, **paso a paso, qué decidió el sistema y por qué**.
+Simulador didáctico de un sistema operativo que realiza **gestión de procesos y de memoria dirigida por interrupciones**: ningún algoritmo corre por iniciativa propia, cada uno se ejecuta como respuesta a una interrupción mediante su rutina de servicio (ISR). No ejecuta código real: los procesos siguen un *guion* (o una ráfaga y un tamaño) y el programa muestra, **paso a paso, qué decidió el sistema y por qué**.
 
 Proyecto del curso **SI421U – Arquitectura de Computador y Sistemas Operativos** (UNI-FIIS).
-
-## Requisitos que cumple
-
-| Req. | Qué pide | Dónde se ve |
-|---|---|---|
-| R1 | Ver **cómo** procesa, paso a paso | Modo `--modo paso` de la consola y botones del visor |
-| R2 | Interrupciones y las 6 transiciones de estado | `simulador/procesos.py` (T1–T6) e `simulador/isr.py` |
-| R3 | El **porqué** de cada cambio | Campo `causa` de cada paso de la bitácora |
-| R4 | Contar interrupciones (total, tipo, proceso) | `simulador/contadores.py`; resumen final y panel del visor |
-| R5 | Visualización tipo mapa de estados | `visor/index.html` |
-| R6 | Bitácora transaccional (antes, después, causa) | `simulador/bitacora.py`; exportación a JSON |
-
-## Requisitos de instalación
-
-- Python 3.10 o superior (sin dependencias externas).
-- Un navegador para el visor.
 
 ## Uso rápido
 
 ```bash
-git clone <url-del-repositorio>
-cd so-interrupt-sim
+git clone https://github.com/devronaldaz/Simulador-de-sistema-operativo-dirigido-por-interrupciones-.git
+cd Simulador-de-sistema-operativo-dirigido-por-interrupciones-
 python -m simulador escenarios/e1_tres_procesos_rr4.json
 ```
 
-En Windows se puede usar `py` en lugar de `python`.
+En Windows use `py` en lugar de `python`. Solo requiere Python 3.10 o superior, sin dependencias.
 
 | Comando | Qué hace |
 |---|---|
-| `python -m simulador ESCENARIO --modo paso` | Un paso por cada Enter (modo principal para la demostración) |
-| `python -m simulador ESCENARIO --modo tick` | Un tick por cada Enter |
-| `python -m simulador ESCENARIO --modo auto --velocidad 5` | Todo seguido, 5 pasos por segundo |
-| `python -m simulador ESCENARIO --modo resumen` | Solo el resumen final (contadores y métricas) |
-| `python -m simulador ESCENARIO --visor --abrir` | Prepara la traza y abre el visor en el navegador |
-| `python -m simulador ESCENARIO --traza trazas/e1.json` | Guarda la bitácora en JSON |
+| `python -m simulador ESCENARIO` | Paso a paso en la consola (Enter avanza) |
+| `python -m simulador ESCENARIO --visor --abrir` | Visor gráfico en el navegador |
+| `python -m simulador ESCENARIO --modo resumen` | Solo el resumen: contadores, memoria y métricas |
+| `python -m simulador ESCENARIO --planificador SJF --expropiativo si` | Cualquier parámetro del JSON se puede cambiar desde la línea de comandos |
 
-Opciones para cambiar la configuración sin editar el JSON: `--planificador RR|FCFS`, `--quantum N`, `--marcos N`, `--reemplazo LRU|FIFO`, `--periodo-timer N`.
+**Manual completo:** [docs/MANUAL_DE_USO.md](docs/MANUAL_DE_USO.md) (parámetros, formato de escenarios y cómo hacer los cambios en vivo).
 
-Órdenes en el modo paso a paso: `Enter` siguiente paso · `t` resto del tick · `c` contadores · `q` colas · `m` memoria · `g N` ir al paso N · `a` automático · `x` salir.
+## Qué simula
 
-## Formato del escenario
+**Procesos**
+- Estados Nuevo, Listo, Ejecutando, Bloqueado, **Zombie** y Terminado, definidos como **tabla de transiciones** (T1–T9), cada cambio con su porqué.
+- Planificación **FCFS, SJF (con y sin expropiación), Round Robin y Prioridades**, combinables con prioridad fija o **dinámica (inversa al uso de CPU)** y **aging**.
+- **Planificador y despachador separados**: el planificador muestra el momento que lo invocó (los 5 de la Sesión 6), su criterio y los candidatos; el despachador guarda y carga contextos.
+- **Planificador de largo plazo** con grado de multiprogramación; **worst time** (rechazar, truncar, cota SJF, por defecto); **señal kill**; recolección de zombies.
 
-```json
-{
-  "nombre": "E1 - tres procesos, Round Robin q=4, 3 marcos, LRU",
-  "config": { "planificador": "RR", "quantum": 4, "marcos": 3, "reemplazo": "LRU",
-              "periodo_timer": 1, "latencia_read": 4, "latencia_fallo": 3 },
-  "procesos": [
-    { "pid": "P2", "llegada": 0, "guion": ["cpu:0", "read:0", "cpu:0", "exit:0"] }
-  ],
-  "eventos_externos": [ { "tick": 12, "tipo": "NMI" } ]
-}
-```
+**Interrupciones:** timer (IRQ0), disco/DMA (IRQ14), llamadas al sistema (INT 0x80), fallo de página (14), protección (13), excepción (0), worst time, señal y NMI, con prioridades, enmascaramiento y anidamiento, y un contador por tipo y por proceso.
 
-| Instrucción | Significado | Interrupción que produce |
+**Memoria**
+- **MMU paginada**: VA → (p, d) → marco → PA visible en cada acceso; tabla de páginas con bits R y M; **TLB** con hit ratio; reemplazo **FIFO, LRU, Óptimo y Clock**, global o local; escritura a swap solo si M=1; marcos reservados al SO; conjunto de trabajo y EAT.
+- **MMU contigua** con base y límite y ajuste **primero, mejor, peor o siguiente** (como el ejemplo del profesor), con falta de memoria y fragmentación externa.
+- **Mapa de memoria** con registro inicial y final en hexadecimal, proceso o SO, estado del frame y estado del proceso.
+
+**Interfaz:** consola paso a paso y visor web con mapa de estados, flujo de la CPU, línea de tiempo, PCB, mapa de memoria, MMU, TLB, métricas en vivo y control de velocidad.
+
+## Requisitos del curso
+
+| Req. | Qué pide | Dónde se ve |
 |---|---|---|
-| `cpu:p` | Cómputo que usa la página *p* | Ninguna, o fallo de página si *p* no está en memoria |
-| `read:p` | Lectura bloqueante de disco | `INT 0x80` (read) |
-| `syscall:p:getpid` | Llamada que no bloquea | `INT 0x80` |
-| `div0:p` | División por cero | Excepción vector 0 |
-| `exit:p` | Fin del proceso | `INT 0x80` (exit) |
-
-## Escenarios incluidos
-
-| Archivo | Qué muestra |
-|---|---|
-| `e1_tres_procesos_rr4.json` | El ejemplo completo del informe: las 6 transiciones, fallo de página con LRU, NMI anidada (23 ticks, 83 pasos, 35 interrupciones) |
-| `s1_dos_cpu_bound.json` | Cambio de contexto con Round Robin |
-| `s3b_cadena_clasica.json` | Cadena clásica de reemplazo; con `--reemplazo FIFO --marcos 4` aparece la anomalía de Belady |
-| `s6_diez_procesos_100.json` | FCFS (retorno 550) frente a RR con `--planificador RR --quantum 1` (retorno 995,5) |
-| `s8_hiperpaginacion.json` | Hiperpaginación: compare `--marcos 3` y `--marcos 6` |
+| R1 | Ver **cómo** procesa, paso a paso | Consola `--modo paso`; visor con controles |
+| R2 | Interrupciones y transiciones de estado | `simulador/modelos.py` (tabla), `procesos.py`, `isr.py` |
+| R3 | El **porqué** de cada cambio | Campo `causa` de cada paso |
+| R4 | Contar interrupciones (total, tipo, proceso) | `contadores.py`; resumen y visor |
+| R5 | Visualización tipo mapa de estados | `visor/index.html` |
+| R6 | Bitácora transaccional (antes, después, causa) | `bitacora.py`; exportación JSON |
 
 ## Pruebas
 
@@ -81,31 +57,42 @@ Opciones para cambiar la configuración sin editar el JSON: `--planificador RR|F
 python -m unittest discover -s pruebas -t pruebas
 ```
 
-La prueba dorada (`pruebas/test_traza_dorada.py`) comprueba que el motor reproduce **paso por paso** la traza del ejemplo E1 generada por la herramienta de referencia del informe (`docs/herramientas/`).
+Hay 49 pruebas. Además de la **traza dorada** del ejemplo E1, incluyen los resultados conocidos de las diapositivas:
+
+| Caso | Resultado |
+|---|---|
+| FCFS 24/3/3 | Espera promedio 17 |
+| SJF no expropiativo / expropiativo | 4 / 3 |
+| FCFS frente a RR, 10 × 100 | 550 / 995,5 |
+| Reemplazo, cadena de la Semana 14 | FIFO 10, LRU 9, Óptimo 7 y Clock 9 fallos |
+| Belady | FIFO 9 → 10 |
+| MMU | VA 13 322 → PA 37 898 |
+| Ajustes | Primero, mejor y peor |
+| EAT | ≈ 200 ns |
+| Conjunto de trabajo | W(13, 6) = {0, 2, 3, 4} |
+
+`python docs/herramientas/matriz.py` corre todas las combinaciones de configuración y genera [docs/MATRIZ_COMBINACIONES.md](docs/MATRIZ_COMBINACIONES.md).
 
 ## Estructura
 
 ```text
-simulador/          motor (Python)
+simulador/          motor (Python, sin dependencias)
   nucleo.py           ciclo principal por tick
   controlador_int.py  IRR, IMR, IF, prioridades, anidamiento; único punto de conteo
   ivt.py · isr.py     tabla de vectores y rutinas de servicio
-  cpu.py · disco.py   hardware simulado
-  procesos.py         máquina de estados (T1–T6) y colas
-  planificacion/      Round Robin, FCFS y despachador
-  memoria/            tabla de páginas, marcos, LRU y FIFO
+  cpu.py · disco.py   hardware simulado (la CPU accede a memoria a través de la MMU)
+  procesos.py         máquina de estados, colas y planificador de largo plazo
+  planificacion/      registro de algoritmos, planificador y despachador
+  memoria/            MMU paginada (gestor.py), contigua (contigua.py) y reemplazo
   contadores.py       contador de interrupciones e invariantes
   bitacora.py         bitácora transaccional y exportación JSON
+  metricas.py         métricas y resumen
   consola.py · cli.py interfaz de texto
 visor/              visor web (solo lee la traza)
 escenarios/         entradas JSON
 pruebas/            pruebas automáticas
-docs/               documentación y herramientas del informe
+docs/               manual, matriz de combinaciones, estado y herramientas
 ```
-
-## Estado
-
-Cimientos funcionales: fases F1 a F5 del informe con Round Robin, FCFS, LRU y FIFO. Pendiente (F6): SJF, prioridades con *aging* y reemplazo Óptimo. Ver [CONTRIBUTING.md](CONTRIBUTING.md) para trabajar en el repositorio.
 
 ## Integrantes
 
