@@ -45,11 +45,18 @@ Otros modos: `--modo tick` (un tick por Enter), `--modo auto --velocidad 5` (5 p
 
 ### 2.2 Visor gráfico (tiempo real)
 
+**Forma recomendada: con el servidor local.** Desde la carpeta del repositorio:
+
 ```bash
-py -m simulador escenarios/e1_tres_procesos_rr4.json --visor --abrir
+py -m simulador.servidor --abrir
 ```
 
-Abre `visor/index.html` en el navegador con la simulación. **Si abre `index.html` sin haber usado `--visor`, verá "Sin traza cargada"**: use el botón *Cargar traza JSON* con un archivo generado con `--traza`.
+Abre http://localhost:8766 (otro puerto: `--puerto 8767`; detener con Ctrl+C). El visor tiene dos pantallas, como el ejemplo del profesor:
+
+1. **Configuración.** Se elige un escenario de ejemplo (sus procesos aparecen en una tabla editable: PID, llegada, prioridad, burst-time, tamaño, E/S y guion; *+ Añadir proceso* agrega filas), el **algoritmo de planificación** (FCFS, SJF, Round Robin o Prioridades, con quantum, expropiación, prioridad fija o dinámica y aging) y la **gestión de memoria** (paginación con reemplazo FIFO, LRU, Óptimo o Clock, o asignación contigua con primer, mejor, peor o siguiente ajuste). *Iniciar simulación* la ejecuta.
+2. **Simulación.** Arriba quedan siempre visibles los **algoritmos en uso**, los controles de reproducción y el paso actual con su porqué. El resto está separado en pestañas: *Procesos* (mapa de estados y flujo de la CPU), *Línea de tiempo*, *PCB*, *Memoria* (mapa, MMU, tabla de páginas y TLB), *Interrupciones y métricas* y *Bitácora*. Al reproducir, la página no se desplaza: solo se mueve la tabla de la pestaña abierta. *← Cambiar algoritmos* vuelve a la configuración.
+
+**Sin servidor:** `py -m simulador ESCENARIO --visor --abrir` abre `visor/index.html` con la traza de ese escenario. La pantalla de configuración muestra entonces los algoritmos de esa traza, pero no puede simular otros. El botón *Cargar traza JSON* abre un archivo generado con `--traza`.
 
 | Panel | Qué muestra |
 |---|---|

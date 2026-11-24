@@ -1,4 +1,5 @@
-// Visor de la bitácora (requisito R5). Solo LEE la traza: no simula nada.
+// Visor de la bitácora (requisito R5). Pantalla 1: elegir algoritmos (con el servidor
+// local simula vía /api/simular). Pantalla 2: la simulación, separada en pestañas.
 // Los estados y las transiciones se leen de la propia traza, así que un estado
 // nuevo (como ZOMBIE) aparece sin tocar este archivo si tiene posición abajo.
 'use strict';
@@ -191,17 +192,27 @@ function pintarMemoria(paso) {
     : '<span class="vacio">sin TLB (parámetro tlb = 0)</span>';
 }
 
-// ---------------------------------------------------------------- general
+
+// ---------------------------------------------------------------- paso actual
+function centrar(caja, elemento, horizontal) {
+  const rc = caja.getBoundingClientRect(), re = elemento.getBoundingClientRect();
+  if (horizontal) caja.scrollLeft += re.left - rc.left - caja.clientWidth / 2;
+  else caja.scrollTop += re.top - rc.top - caja.clientHeight / 2 + re.height / 2;
+}
+
 function pintar() {
   if (!traza) return;
   const paso = traza.pasos[i], total = traza.pasos.length;
   $('posicion').textContent = `paso ${paso.paso}/${total} · t=${paso.tick}`;
   $('barra').value = i + 1;
-  pintarMapa(paso);
   const titulo = paso.transicion
     ? `${paso.transicion.pid}: ${paso.transicion.de} → ${paso.transicion.a} (${paso.transicion.id})`
     : `${paso.tipo_paso} · ${paso.componente}`;
-  $('porque').innerHTML = `<div class="titulo">${esc(titulo)}${paso.int_id ? ` · INT #${paso.int_id}` : ''}</div>` +
+  const intTxt = paso.int_id ? ` · INT #${paso.int_id}` : '';
+  $('paso-actual').innerHTML = `<b>${esc(titulo)}${intTxt}</b> — ${esc(paso.causa)}`;
+  $('paso-actual').title = paso.causa;
+  pintarMapa(paso);
+  $('porque').innerHTML = `<div class="titulo">${esc(titulo)}${intTxt}</div>` +
     `<div>Causa: ${esc(paso.causa)}</div><div class="cambio">Antes: ${esc(paso.antes)}<br>Después: ${esc(paso.despues)}</div>`;
   pintarFlujo(paso);
   pintarLinea(paso);
@@ -209,16 +220,41 @@ function pintar() {
   pintarMemoria(paso);
   document.querySelectorAll('#filas tr.actual').forEach(f => f.classList.remove('actual'));
   const fila = $('filas').children[i];
-  if (fila) { fila.classList.add('actual'); fila.scrollIntoView({ block: 'nearest' }); }
+  if (fila) fila.classList.add('actual');
+  // Solo se desplaza la caja interna de la pestaña visible: la página no se mueve.
+  if (fila && !$('p-bitacora').hidden) centrar($('caja-filas'), fila);
+  const celda = document.querySelector('.linea td.ahora');
+  if (celda && !$('p-linea').hidden) centrar($('linea'), celda, true);
+}
+
+// ---------------------------------------------------------------- algoritmos en uso
+const NOMBRES_PLAN = { FCFS: 'FCFS', SJF: 'SJF', RR: 'Round Robin', PRIORIDAD: 'Prioridades' };
+const TITULOS_PLAN = { FCFS: 'First Come, First Served', SJF: 'Shortest Job First', RR: 'Round Robin', PRIORIDAD: 'Por prioridades' };
+const NOMBRES_REEMPLAZO = { FIFO: 'FIFO', LRU: 'LRU', OPTIMO: 'Óptimo', CLOCK: 'Reloj (segunda oportunidad)' };
+
+function textoProcesos(c, nombre) {
+  let t = `<b>${esc(nombre)}</b>`;
+  if (c.planificador === 'RR') t += ` · quantum ${c.quantum}`;
+  if (c.aging) t += ` · aging ${c.aging}`;
+  return t + ` · timer cada ${c.periodo_timer} tick${c.periodo_timer > 1 ? 's' : ''}`;
+}
+function textoMemoria(c) {
+  if (c.mmu === 'contigua') return `<b>Contigua · ${esc(c.ajuste)} ajuste</b> · ${c.memoria_total} B (SO ${c.memoria_so} B)`;
+  return `<b>Paginación · reemplazo ${esc(NOMBRES_REEMPLAZO[c.reemplazo] || c.reemplazo)}</b> (${esc(c.alcance)})` +
+    ` · ${c.marcos} marcos de ${c.tamano_marco} B` + (c.tlb ? ` · TLB ${c.tlb}` : ' · sin TLB');
 }
 
 function cargar(datos) {
+  if (!datos || !datos.estados) { alert('Traza de una versión anterior: vuelva a generarla con --visor.'); return false; }
+  if (temporizador) alternar();
   traza = datos; i = 0;
-  if (!traza.estados) { alert('Traza de una versión anterior: vuelva a generarla con --visor.'); return; }
   procTabla = traza.procesos[0];
   const r = traza.resumen, c = traza.config;
-  $('escenario').textContent = `${traza.escenario} · ${traza.planificador}${c.quantum && traza.planificador.startsWith('RR') ? ` q=${c.quantum}` : ''} · ` +
-    `memoria ${traza.memoria} · ${r.ticks} ticks · ${r.interrupciones} interrupciones · ${r.cambios_contexto} cambios de contexto`;
+  $('algoritmos').innerHTML =
+    `<span class="insignia">Gestión de procesos: ${textoProcesos(c, traza.planificador)}</span>` +
+    `<span class="insignia">Gestión de memoria: ${textoMemoria(c)}</span>`;
+  $('escenario').textContent = `${traza.escenario} · ${traza.procesos.length} procesos · ${r.ticks} ticks · ` +
+    `${r.interrupciones} interrupciones · ${r.cambios_contexto} cambios de contexto`;
   $('barra').max = traza.pasos.length;
   $('proc-tabla').innerHTML = traza.procesos.map(p => `<option>${p}</option>`).join('');
   $('filas').innerHTML = traza.pasos.map((p, k) =>
@@ -226,17 +262,216 @@ function cargar(datos) {
     `<td>${esc(p.componente)}</td><td>${esc(p.antes)} → ${esc(p.despues)}</td><td>${esc(p.causa)}</td></tr>`).join('');
   dibujarMapa();
   construirLinea();
-  pintar();
+  return true;
 }
 
 function ir(k) { if (traza) { i = Math.max(0, Math.min(traza.pasos.length - 1, k)); pintar(); } }
 function alternar() {
   if (temporizador) { clearInterval(temporizador); temporizador = null; $('reproducir').textContent = 'Reproducir'; return; }
+  if (!traza) return;
+  if (i >= traza.pasos.length - 1) ir(0);
   temporizador = setInterval(() => { if (!traza || i >= traza.pasos.length - 1) return alternar(); ir(i + 1); }, +$('velocidad').value);
   $('reproducir').textContent = 'Pausa';
 }
 
+// ---------------------------------------------------------------- pantallas y pestañas
+function mostrar(pantalla) {
+  const sim = pantalla === 'sim' && !!traza;
+  if (!sim && temporizador) alternar();
+  $('pantalla-inicio').hidden = sim;
+  $('pantalla-sim').hidden = !sim;
+  if (sim) pintar();
+  window.scrollTo(0, 0);
+  const hash = sim ? '#simulacion' : '#inicio';
+  if (location.hash !== hash) history.pushState(null, '', hash);
+}
+window.addEventListener('popstate', () => mostrar(location.hash === '#simulacion' ? 'sim' : 'inicio'));
+
+function activarPestana(nombre) {
+  document.querySelectorAll('.pestanas button').forEach(b => b.classList.toggle('activa', b.dataset.pestana === nombre));
+  document.querySelectorAll('#pantalla-sim .panel').forEach(p => { p.hidden = p.id !== `p-${nombre}`; });
+  try { localStorage.setItem('so-visor-pestana', nombre); } catch (e) { /* sin almacenamiento */ }
+  pintar();
+}
+document.querySelectorAll('.pestanas button').forEach(b => { b.onclick = () => activarPestana(b.dataset.pestana); });
+
+// ---------------------------------------------------------------- pantalla de inicio
+const OPC_ESTATICAS = {
+  planificadores: {
+    FCFS: 'Primero en llegar, primero en ser atendido (no expropiativo)',
+    SJF: 'Menor próxima ráfaga de CPU; con expropiativo=true es SRTF',
+    RR: 'Turno fijo (quantum); al agotarse vuelve al final de la cola',
+    PRIORIDAD: 'Mayor prioridad (menor número); expropiativo por defecto',
+  },
+  reemplazo: { LRU: 'la menos recientemente usada', FIFO: 'la que lleva más tiempo en memoria',
+    OPTIMO: 'la que tardará más en volver a usarse', CLOCK: 'la primera con bit R=0 que encuentra la manecilla' },
+  ajuste: { primer: 'el primer hueco donde cabe', mejor: 'el hueco más pequeño donde cabe', peor: 'el hueco más grande',
+    siguiente: 'como primer ajuste, pero sigue desde el último hueco usado' },
+  por_defecto: {},
+};
+const MMU = {
+  paginada: ['Paginación (MMU con tabla de páginas)', 'Dirección virtual → (página, desplazamiento) → marco; fallos de página y reemplazo'],
+  contigua: ['Asignación contigua (base y límite)', 'Cada proceso ocupa un bloque continuo; huecos y fragmentación externa'],
+};
+const CAMPOS_NUM = ['quantum', 'aging', 'periodo_timer', 'grado_multiprogramacion', 'worst_time', 'recolector_ticks',
+  'marcos', 'marcos_so', 'tamano_marco', 'tlb', 'memoria_total', 'memoria_so'];
+const CAMPOS_TXT = ['prioridad', 'worst_time_modo', 'politica_zombie', 'alcance'];
+
+let API = false, OPC = OPC_ESTATICAS, ESCENARIOS = [], base = null;
+const eleccion = { planificador: 'RR', mmu: 'paginada', reemplazo: 'LRU', ajuste: 'primer' };
+
+function tarjetas(id, clave, opciones, titulo) {
+  $(id).innerHTML = Object.entries(opciones).map(([valor, desc]) =>
+    `<button type="button" class="tarjeta" data-clave="${clave}" data-valor="${valor}">` +
+    `<span class="t">${esc(titulo(valor))}</span><span class="d">${esc(desc)}</span></button>`).join('');
+}
+
+function construirTarjetas() {
+  tarjetas('tarjetas-planificador', 'planificador', OPC.planificadores, v => `${TITULOS_PLAN[v] || v} (${v})`);
+  tarjetas('tarjetas-mmu', 'mmu', Object.fromEntries(Object.entries(MMU).map(([k, v]) => [k, v[1]])), v => MMU[v][0]);
+  tarjetas('tarjetas-reemplazo', 'reemplazo', Object.fromEntries(Object.entries(OPC.reemplazo).map(([k, v]) => [k, `Víctima: ${v}`])),
+    v => NOMBRES_REEMPLAZO[v] || v);
+  tarjetas('tarjetas-ajuste', 'ajuste', OPC.ajuste, v => `${v[0].toUpperCase()}${v.slice(1)} ajuste`);
+  document.querySelectorAll('.tarjeta').forEach(b => {
+    b.onclick = () => { eleccion[b.dataset.clave] = b.dataset.valor; refrescarEleccion(); };
+  });
+}
+
+function refrescarEleccion() {
+  document.querySelectorAll('.tarjeta').forEach(b => b.classList.toggle('elegida', eleccion[b.dataset.clave] === b.dataset.valor));
+  document.querySelectorAll('[data-solo]').forEach(el => { el.hidden = el.dataset.solo !== eleccion.planificador; });
+  document.querySelectorAll('[data-mmu]').forEach(el => { el.hidden = el.dataset.mmu !== eleccion.mmu; });
+  const memoria = eleccion.mmu === 'contigua'
+    ? `asignación <b>contigua</b> con <b>${eleccion.ajuste} ajuste</b>`
+    : `<b>paginación</b> con reemplazo <b>${NOMBRES_REEMPLAZO[eleccion.reemplazo] || eleccion.reemplazo}</b>`;
+  const q = eleccion.planificador === 'RR' && $('quantum').value ? ` (quantum ${$('quantum').value})` : '';
+  $('resumen-eleccion').innerHTML = `Procesos: <b>${NOMBRES_PLAN[eleccion.planificador] || eleccion.planificador}</b>${q} · Memoria: ${memoria}`;
+}
+
+function llenarConfig(cfg) {
+  const c = { ...OPC.por_defecto, ...cfg };
+  for (const k of ['planificador', 'mmu', 'reemplazo', 'ajuste']) if (c[k]) eleccion[k] = c[k];
+  for (const k of [...CAMPOS_NUM, ...CAMPOS_TXT]) $(k).value = c[k] ?? '';
+  $('expropiativo').value = c.expropiativo === true ? 'si' : c.expropiativo === false ? 'no' : '';
+  refrescarEleccion();
+}
+
+function filaProceso(p = {}) {
+  const tr = document.createElement('tr');
+  const celda = (campo, valor, tipo = 'text', extra = '') =>
+    `<td><input data-campo="${campo}" type="${tipo}" value="${esc(valor ?? '')}" ${extra}></td>`;
+  tr.innerHTML = celda('pid', p.pid) + celda('llegada', p.llegada ?? 0, 'number', 'min="0"') +
+    celda('prioridad', p.prioridad ?? '', 'number', 'min="0"') + celda('burst', p.burst, 'number', 'min="1"') +
+    celda('tamano', p.tamano, 'number', 'min="1"') + celda('es', (p.es || []).join(', '), 'text', 'placeholder="ej. 2, 5"') +
+    celda('guion', (p.guion || []).join(', '), 'text', 'placeholder="se genera con el burst-time"') +
+    '<td><button type="button" class="quitar" title="Quitar proceso">✕</button></td>';
+  tr.querySelector('.quitar').onclick = () => tr.remove();
+  return tr;
+}
+
+function elegirEscenario(k) {
+  base = ESCENARIOS[k];
+  if (!base) return;
+  const d = base.datos;
+  $('procesos').replaceChildren(...(d.procesos || []).map(filaProceso));
+  const ev = d.eventos_externos || [];
+  $('eventos-externos').textContent = ev.length
+    ? `Eventos externos del escenario: ${ev.map(e => `${e.tipo}${e.pid ? ' ' + e.pid : ''} en t=${e.tick}`).join(', ')}` : '';
+  llenarConfig(d.config || {});
+}
+
+function leerProcesos() {
+  return [...$('procesos').children].map(tr => {
+    const v = c => tr.querySelector(`[data-campo="${c}"]`).value.trim();
+    const p = { pid: v('pid'), llegada: +v('llegada') || 0 };
+    if (v('prioridad') !== '') p.prioridad = +v('prioridad');
+    if (v('tamano') !== '') p.tamano = +v('tamano');
+    const guion = v('guion').split(',').map(s => s.trim()).filter(Boolean);
+    if (guion.length) p.guion = guion;
+    else {
+      if (v('burst') !== '') p.burst = +v('burst');
+      const es = v('es').split(',').map(s => s.trim()).filter(Boolean).map(Number);
+      if (es.length) p.es = es;
+    }
+    return p;
+  });
+}
+
+function leerConfig() {
+  const cfg = { ...(base ? base.datos.config : {}), ...eleccion };
+  for (const k of CAMPOS_NUM) { const v = $(k).value.trim(); if (v !== '') cfg[k] = +v; else delete cfg[k]; }
+  for (const k of CAMPOS_TXT) cfg[k] = $(k).value;
+  const ex = $('expropiativo').value;
+  if (ex) cfg.expropiativo = ex === 'si'; else delete cfg.expropiativo;
+  return cfg;
+}
+
+async function simular() {
+  const procesos = leerProcesos();
+  const pids = new Set(procesos.map(p => p.pid));
+  const eventos = (base ? base.datos.eventos_externos || [] : []).filter(e => e.tipo !== 'KILL' || pids.has(e.pid));
+  // El nombre del escenario de ejemplo menciona su algoritmo original; aquí solo se toman sus procesos.
+  const datos = { nombre: base ? `Procesos tomados del ejemplo: ${base.nombre.replace(/\s*\(.*\)\s*$/, '')}` : 'Procesos propios',
+    config: leerConfig(), procesos, eventos_externos: eventos };
+  $('error').hidden = true;
+  $('iniciar').disabled = true; $('iniciar').textContent = 'Simulando…';
+  try {
+    const r = await fetch('api/simular', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(datos) });
+    const cuerpo = await r.json();
+    if (!r.ok) throw new Error(cuerpo.error || `error ${r.status}`);
+    if (cargar(cuerpo)) mostrar('sim');
+  } catch (err) {
+    $('error').textContent = `No se pudo simular: ${err.message}`;
+    $('error').hidden = false;
+  } finally {
+    $('iniciar').disabled = false; $('iniciar').textContent = 'Iniciar simulación';
+  }
+}
+
+async function preparar() {
+  try {
+    const r = await fetch('api/opciones', { cache: 'no-store' });
+    if (!r.ok) throw new Error('sin API');
+    OPC = await r.json();
+    ESCENARIOS = await (await fetch('api/escenarios', { cache: 'no-store' })).json();
+    API = true;
+  } catch (e) { API = false; }
+  construirTarjetas();
+  if (API) {
+    $('escenario-base').innerHTML = ESCENARIOS.map((e, k) => `<option value="${k}">${esc(e.nombre)}</option>`).join('');
+    elegirEscenario(0);
+  } else {
+    $('aviso-estatico').hidden = false;
+    document.querySelector('#pantalla-inicio .bloque').hidden = true;   // sin servidor no se editan procesos
+    document.querySelectorAll('#pantalla-inicio input, #pantalla-inicio select, #pantalla-inicio .tarjeta')
+      .forEach(el => { el.disabled = true; });
+    $('iniciar').hidden = true;
+    if (window.TRAZA && cargar(window.TRAZA)) {
+      llenarConfig(window.TRAZA.config);
+      $('ver-traza').hidden = false;
+    } else {
+      $('resumen-eleccion').innerHTML = 'No hay traza cargada: genere una con <code>py -m simulador ESCENARIO --visor</code> o use <b>Cargar traza JSON</b>.';
+    }
+  }
+  let pestana = 'procesos';
+  try { pestana = localStorage.getItem('so-visor-pestana') || pestana; } catch (e) { /* sin almacenamiento */ }
+  if (!$(`p-${pestana}`)) pestana = 'procesos';
+  document.querySelectorAll('.pestanas button').forEach(b => b.classList.toggle('activa', b.dataset.pestana === pestana));
+  document.querySelectorAll('#pantalla-sim .panel').forEach(p => { p.hidden = p.id !== `p-${pestana}`; });
+  mostrar(location.hash === '#simulacion' ? 'sim' : 'inicio');
+}
+
+// ---------------------------------------------------------------- eventos
 dibujarMapa();
+$('iniciar').onclick = simular;
+$('anadir-proceso').onclick = () => {
+  const n = $('procesos').children.length + 1;
+  $('procesos').append(filaProceso({ pid: `P${n}`, llegada: 0, burst: 4, tamano: 4096 }));
+};
+$('escenario-base').onchange = e => elegirEscenario(+e.target.value);
+$('quantum').oninput = refrescarEleccion;
+$('ver-traza').onclick = () => mostrar('sim');
+$('volver').onclick = () => mostrar('inicio');
 $('inicio').onclick = () => ir(0);
 $('anterior').onclick = () => ir(i - 1);
 $('siguiente').onclick = () => ir(i + 1);
@@ -253,14 +488,18 @@ $('linea').onclick = e => {
 };
 $('archivo').onchange = e => {
   const f = e.target.files[0]; if (!f) return;
-  f.text().then(t => cargar(JSON.parse(t))).catch(err => alert('Traza inválida: ' + err.message));
+  f.text().then(t => {
+    const datos = JSON.parse(t);
+    if (cargar(datos)) { if (!API) { llenarConfig(datos.config); $('ver-traza').hidden = false; } mostrar('sim'); }
+  }).catch(err => alert('Traza inválida: ' + err.message));
+  e.target.value = '';
 };
 document.addEventListener('keydown', e => {
-  if (['INPUT', 'SELECT'].includes(e.target.tagName)) return;
+  if ($('pantalla-sim').hidden || ['INPUT', 'SELECT', 'TEXTAREA'].includes(e.target.tagName)) return;
   if (e.key === 'ArrowRight') ir(i + 1);
   else if (e.key === 'ArrowLeft') ir(i - 1);
   else if (e.key === 'Home') ir(0);
   else if (e.key === 'End') ir(Infinity);
   else if (e.key === ' ') { e.preventDefault(); alternar(); }
 });
-if (window.TRAZA) cargar(window.TRAZA);
+preparar();

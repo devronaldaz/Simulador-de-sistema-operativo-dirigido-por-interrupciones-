@@ -17,7 +17,8 @@ En Windows use `py` en lugar de `python`. Solo requiere Python 3.10 o superior, 
 | Comando | Qué hace |
 |---|---|
 | `python -m simulador ESCENARIO` | Paso a paso en la consola (Enter avanza) |
-| `python -m simulador ESCENARIO --visor --abrir` | Visor gráfico en el navegador |
+| `python -m simulador.servidor --abrir` | **Visor web**: elige los algoritmos de procesos y memoria y simula en el navegador (http://localhost:8766) |
+| `python -m simulador ESCENARIO --visor --abrir` | Visor con la traza de ese escenario, sin servidor |
 | `python -m simulador ESCENARIO --modo resumen` | Solo el resumen: contadores, memoria y métricas |
 | `python -m simulador ESCENARIO --planificador SJF --expropiativo si` | Cualquier parámetro del JSON se puede cambiar desde la línea de comandos |
 
@@ -38,7 +39,7 @@ En Windows use `py` en lugar de `python`. Solo requiere Python 3.10 o superior, 
 - **MMU contigua** con base y límite y ajuste **primero, mejor, peor o siguiente** (como el ejemplo del profesor), con falta de memoria y fragmentación externa.
 - **Mapa de memoria** con registro inicial y final en hexadecimal, proceso o SO, estado del frame y estado del proceso.
 
-**Interfaz:** consola paso a paso y visor web con mapa de estados, flujo de la CPU, línea de tiempo, PCB, mapa de memoria, MMU, TLB, métricas en vivo y control de velocidad.
+**Interfaz:** consola paso a paso y visor web en dos pantallas: primero se eligen los procesos y los algoritmos (planificación, paginación o contigua, reemplazo o ajuste); luego la simulación, separada en pestañas (procesos, línea de tiempo, PCB, memoria, interrupciones y métricas, bitácora) con control de velocidad.
 
 ## Requisitos del curso
 
@@ -88,7 +89,8 @@ simulador/          motor (Python, sin dependencias)
   bitacora.py         bitácora transaccional y exportación JSON
   metricas.py         métricas y resumen
   consola.py · cli.py interfaz de texto
-visor/              visor web (solo lee la traza)
+  servidor.py         servidor local del visor (API /api/simular)
+visor/              visor web: configuración + simulación en pestañas
 escenarios/         entradas JSON
 pruebas/            pruebas automáticas
 docs/               manual, matriz de combinaciones, estado y herramientas
