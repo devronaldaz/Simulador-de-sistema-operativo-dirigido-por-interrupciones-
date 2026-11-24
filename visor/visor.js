@@ -266,13 +266,20 @@ function cargar(datos) {
 }
 
 function ir(k) { if (traza) { i = Math.max(0, Math.min(traza.pasos.length - 1, k)); pintar(); } }
+const ICONO_PLAY = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 4l13 8-13 8z"/></svg>';
+const ICONO_PAUSA = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5v14M16 5v14"/></svg>';
+function botonReproducir(reproduciendo) {
+  $('reproducir').innerHTML = reproduciendo ? `${ICONO_PAUSA}<span>Pausa</span>` : `${ICONO_PLAY}<span>Reproducir</span>`;
+  $('reproducir').setAttribute('aria-pressed', String(reproduciendo));
+}
 function alternar() {
-  if (temporizador) { clearInterval(temporizador); temporizador = null; $('reproducir').textContent = 'Reproducir'; return; }
+  if (temporizador) { clearInterval(temporizador); temporizador = null; botonReproducir(false); return; }
   if (!traza) return;
   if (i >= traza.pasos.length - 1) ir(0);
   temporizador = setInterval(() => { if (!traza || i >= traza.pasos.length - 1) return alternar(); ir(i + 1); }, +$('velocidad').value);
-  $('reproducir').textContent = 'Pausa';
+  botonReproducir(true);
 }
+botonReproducir(false);
 
 // ---------------------------------------------------------------- pantallas y pestañas
 function mostrar(pantalla) {
@@ -287,13 +294,31 @@ function mostrar(pantalla) {
 }
 window.addEventListener('popstate', () => mostrar(location.hash === '#simulacion' ? 'sim' : 'inicio'));
 
-function activarPestana(nombre) {
-  document.querySelectorAll('.pestanas button').forEach(b => b.classList.toggle('activa', b.dataset.pestana === nombre));
+const PESTANAS = [...document.querySelectorAll('.pestanas [role=tab]')];
+function marcarPestana(nombre) {   // solo el estado visual y ARIA (patrón de pestañas WAI-ARIA)
+  PESTANAS.forEach(b => {
+    const activa = b.dataset.pestana === nombre;
+    b.classList.toggle('activa', activa);
+    b.setAttribute('aria-selected', String(activa));
+    b.tabIndex = activa ? 0 : -1;
+  });
   document.querySelectorAll('#pantalla-sim .panel').forEach(p => { p.hidden = p.id !== `p-${nombre}`; });
+}
+function activarPestana(nombre) {
+  marcarPestana(nombre);
   try { localStorage.setItem('so-visor-pestana', nombre); } catch (e) { /* sin almacenamiento */ }
   pintar();
 }
-document.querySelectorAll('.pestanas button').forEach(b => { b.onclick = () => activarPestana(b.dataset.pestana); });
+PESTANAS.forEach((b, k) => {
+  b.onclick = () => activarPestana(b.dataset.pestana);
+  b.onkeydown = e => {   // flechas, Inicio y Fin recorren las pestañas
+    const destino = { ArrowRight: k + 1, ArrowLeft: k - 1, Home: 0, End: PESTANAS.length - 1 }[e.key];
+    if (destino === undefined) return;
+    e.preventDefault(); e.stopPropagation();
+    const b2 = PESTANAS[(destino + PESTANAS.length) % PESTANAS.length];
+    b2.focus(); activarPestana(b2.dataset.pestana);
+  };
+});
 
 // ---------------------------------------------------------------- pantalla de inicio
 const OPC_ESTATICAS = {
@@ -338,7 +363,11 @@ function construirTarjetas() {
 }
 
 function refrescarEleccion() {
-  document.querySelectorAll('.tarjeta').forEach(b => b.classList.toggle('elegida', eleccion[b.dataset.clave] === b.dataset.valor));
+  document.querySelectorAll('.tarjeta').forEach(b => {
+    const elegida = eleccion[b.dataset.clave] === b.dataset.valor;
+    b.classList.toggle('elegida', elegida);
+    b.setAttribute('aria-pressed', String(elegida));
+  });
   document.querySelectorAll('[data-solo]').forEach(el => { el.hidden = el.dataset.solo !== eleccion.planificador; });
   document.querySelectorAll('[data-mmu]').forEach(el => { el.hidden = el.dataset.mmu !== eleccion.mmu; });
   const memoria = eleccion.mmu === 'contigua'
@@ -364,7 +393,8 @@ function filaProceso(p = {}) {
     celda('prioridad', p.prioridad ?? '', 'number', 'min="0"') + celda('burst', p.burst, 'number', 'min="1"') +
     celda('tamano', p.tamano, 'number', 'min="1"') + celda('es', (p.es || []).join(', '), 'text', 'placeholder="ej. 2, 5"') +
     celda('guion', (p.guion || []).join(', '), 'text', 'placeholder="se genera con el burst-time"') +
-    '<td><button type="button" class="quitar" title="Quitar proceso">✕</button></td>';
+    `<td><button type="button" class="quitar" aria-label="Quitar proceso ${esc(p.pid || '')}" title="Quitar proceso">` +
+    '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg></button></td>';
   tr.querySelector('.quitar').onclick = () => tr.remove();
   return tr;
 }
@@ -414,7 +444,7 @@ async function simular() {
   const datos = { nombre: base ? `Procesos tomados del ejemplo: ${base.nombre.replace(/\s*\(.*\)\s*$/, '')}` : 'Procesos propios',
     config: leerConfig(), procesos, eventos_externos: eventos };
   $('error').hidden = true;
-  $('iniciar').disabled = true; $('iniciar').textContent = 'Simulando…';
+  $('iniciar').disabled = true; $('iniciar').querySelector('span').textContent = 'Simulando…';
   try {
     const r = await fetch('api/simular', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(datos) });
     const cuerpo = await r.json();
@@ -424,7 +454,7 @@ async function simular() {
     $('error').textContent = `No se pudo simular: ${err.message}`;
     $('error').hidden = false;
   } finally {
-    $('iniciar').disabled = false; $('iniciar').textContent = 'Iniciar simulación';
+    $('iniciar').disabled = false; $('iniciar').querySelector('span').textContent = 'Iniciar simulación';
   }
 }
 
@@ -456,10 +486,18 @@ async function preparar() {
   let pestana = 'procesos';
   try { pestana = localStorage.getItem('so-visor-pestana') || pestana; } catch (e) { /* sin almacenamiento */ }
   if (!$(`p-${pestana}`)) pestana = 'procesos';
-  document.querySelectorAll('.pestanas button').forEach(b => b.classList.toggle('activa', b.dataset.pestana === pestana));
-  document.querySelectorAll('#pantalla-sim .panel').forEach(p => { p.hidden = p.id !== `p-${pestana}`; });
+  marcarPestana(pestana);
   mostrar(location.hash === '#simulacion' ? 'sim' : 'inicio');
 }
+
+// ---------------------------------------------------------------- tema (oscuro por defecto; claro para el proyector)
+function aplicarTema(tema) {
+  document.documentElement.dataset.theme = tema;
+  $('tema').setAttribute('aria-label', tema === 'light' ? 'Cambiar a tema oscuro' : 'Cambiar a tema claro');
+  try { localStorage.setItem('so-visor-tema', tema); } catch (e) { /* sin almacenamiento */ }
+}
+$('tema').onclick = () => aplicarTema(document.documentElement.dataset.theme === 'light' ? 'dark' : 'light');
+if (document.documentElement.dataset.theme === 'light') $('tema').setAttribute('aria-label', 'Cambiar a tema oscuro');
 
 // ---------------------------------------------------------------- eventos
 dibujarMapa();

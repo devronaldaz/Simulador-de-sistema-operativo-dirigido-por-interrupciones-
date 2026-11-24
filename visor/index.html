@@ -4,18 +4,36 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Simulador de SO</title>
+  <meta name="color-scheme" content="dark light">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap">
   <link rel="stylesheet" href="estilos.css">
+  <script>try { const t = localStorage.getItem('so-visor-tema'); if (t) document.documentElement.dataset.theme = t; } catch (e) {}</script>
 </head>
 <body>
+  <a class="saltar" href="#contenido">Saltar al contenido</a>
   <header class="cabecera">
-    <div>
-      <h1>Simulador de SO dirigido por interrupciones</h1>
-      <p class="sub">Gestión de procesos y gestión de memoria · SI421U · UNI-FIIS</p>
+    <div class="marca">
+      <svg class="logo" viewBox="0 0 24 24" aria-hidden="true"><rect x="5" y="5" width="14" height="14" rx="2"/><rect x="9" y="9" width="6" height="6"/><path d="M9 2v3M15 2v3M9 19v3M15 19v3M2 9h3M2 15h3M19 9h3M19 15h3"/></svg>
+      <div>
+        <h1>Simulador de SO dirigido por interrupciones</h1>
+        <p class="sub">Gestión de procesos y gestión de memoria · SI421U · UNI-FIIS</p>
+      </div>
     </div>
-    <label class="boton secundario cargar">Cargar traza JSON
-      <input type="file" id="archivo" accept=".json,application/json">
-    </label>
+    <div class="cabecera-acciones">
+      <button type="button" id="tema" class="boton icono secundario" aria-label="Cambiar a tema claro" title="Tema claro / oscuro">
+        <svg viewBox="0 0 24 24" aria-hidden="true" class="ico-sol"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg>
+        <svg viewBox="0 0 24 24" aria-hidden="true" class="ico-luna"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg>
+      </button>
+      <label class="boton secundario cargar">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M17 8l-5-5-5 5M12 3v12"/></svg>
+        Cargar traza JSON
+        <input type="file" id="archivo" accept=".json,application/json">
+      </label>
+    </div>
   </header>
+  <div id="contenido"></div>
 
   <!-- ================================================================ PANTALLA 1: configuración -->
   <main id="pantalla-inicio" class="pantalla">
@@ -101,26 +119,38 @@
     </section>
 
     <div class="iniciar">
-      <div id="resumen-eleccion" class="resumen-eleccion"></div>
-      <div id="error" class="error" hidden></div>
-      <button id="iniciar" class="boton grande">Iniciar simulación</button>
+      <div class="iniciar-texto">
+        <div id="resumen-eleccion" class="resumen-eleccion" aria-live="polite"></div>
+        <div id="error" class="error" role="alert" hidden></div>
+      </div>
+      <button id="iniciar" class="boton grande">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 4l13 8-13 8z"/></svg>
+        <span>Iniciar simulación</span>
+      </button>
     </div>
   </main>
 
   <!-- ================================================================ PANTALLA 2: simulación -->
   <main id="pantalla-sim" class="pantalla" hidden>
     <div class="barra-sim">
-      <button id="volver" class="boton secundario">← Cambiar algoritmos</button>
+      <button id="volver" class="boton secundario">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 18l-6-6 6-6"/></svg>
+        Cambiar algoritmos
+      </button>
       <div class="algoritmos" id="algoritmos"></div>
     </div>
     <p id="escenario" class="sub"></p>
 
     <nav class="controles" aria-label="Controles">
-      <button id="inicio" title="Primer paso (Inicio)">⏮</button>
-      <button id="anterior" title="Paso anterior (←)">◀</button>
-      <button id="siguiente" title="Paso siguiente (→)">▶</button>
-      <button id="fin" title="Último paso (Fin)">⏭</button>
-      <button id="reproducir" class="principal" title="Reproducir / pausar (espacio)">Reproducir</button>
+      <button id="inicio" title="Primer paso (Inicio)" aria-label="Primer paso">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 5v14M18 6l-9 6 9 6z"/></svg></button>
+      <button id="anterior" title="Paso anterior (←)" aria-label="Paso anterior">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 18l-6-6 6-6"/></svg></button>
+      <button id="siguiente" title="Paso siguiente (→)" aria-label="Paso siguiente">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 18l6-6-6-6"/></svg></button>
+      <button id="fin" title="Último paso (Fin)" aria-label="Último paso">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M18 5v14M6 6l9 6-9 6z"/></svg></button>
+      <button id="reproducir" class="principal" title="Reproducir / pausar (espacio)"></button>
       <label>Velocidad
         <select id="velocidad">
           <option value="1500">0,5×</option><option value="700" selected>1×</option>
@@ -132,16 +162,16 @@
       <div id="paso-actual" class="paso-actual"></div>
     </nav>
 
-    <div class="pestanas" role="tablist">
-      <button role="tab" data-pestana="procesos" class="activa">Procesos</button>
-      <button role="tab" data-pestana="linea">Línea de tiempo</button>
-      <button role="tab" data-pestana="pcb-tab">PCB</button>
-      <button role="tab" data-pestana="memoria">Memoria</button>
-      <button role="tab" data-pestana="ints">Interrupciones y métricas</button>
-      <button role="tab" data-pestana="bitacora">Bitácora</button>
+    <div class="pestanas" role="tablist" aria-label="Vistas de la simulación">
+      <button role="tab" id="tab-procesos" aria-controls="p-procesos" data-pestana="procesos" class="activa">Procesos</button>
+      <button role="tab" id="tab-linea" aria-controls="p-linea" data-pestana="linea">Línea de tiempo</button>
+      <button role="tab" id="tab-pcb-tab" aria-controls="p-pcb-tab" data-pestana="pcb-tab">PCB</button>
+      <button role="tab" id="tab-memoria" aria-controls="p-memoria" data-pestana="memoria">Memoria</button>
+      <button role="tab" id="tab-ints" aria-controls="p-ints" data-pestana="ints">Interrupciones y métricas</button>
+      <button role="tab" id="tab-bitacora" aria-controls="p-bitacora" data-pestana="bitacora">Bitácora</button>
     </div>
 
-    <section class="panel" id="p-procesos">
+    <section class="panel" role="tabpanel" aria-labelledby="tab-procesos" id="p-procesos">
       <div class="fila">
         <div class="caja">
           <h2>Mapa de estados y transiciones</h2>
@@ -156,7 +186,7 @@
       </div>
     </section>
 
-    <section class="panel" id="p-linea" hidden>
+    <section class="panel" role="tabpanel" aria-labelledby="tab-linea" id="p-linea" hidden>
       <div class="caja">
         <h2>Línea de tiempo <span class="nota">(una fila por proceso; la última fila marca las interrupciones de cada tick; clic en una columna para ir a ese tick)</span></h2>
         <div id="linea" class="linea"></div>
@@ -164,14 +194,14 @@
       </div>
     </section>
 
-    <section class="panel" id="p-pcb-tab" hidden>
+    <section class="panel" role="tabpanel" aria-labelledby="tab-pcb-tab" id="p-pcb-tab" hidden>
       <div class="caja">
         <h2>Bloques de control de proceso (PCB)</h2>
         <div class="tabla"><table id="pcb"></table></div>
       </div>
     </section>
 
-    <section class="panel" id="p-memoria" hidden>
+    <section class="panel" role="tabpanel" aria-labelledby="tab-memoria" id="p-memoria" hidden>
       <div class="fila">
         <div class="caja">
           <h2>Mapa de memoria <span class="nota" id="modo-memoria"></span></h2>
@@ -187,14 +217,14 @@
       </div>
     </section>
 
-    <section class="panel" id="p-ints" hidden>
+    <section class="panel" role="tabpanel" aria-labelledby="tab-ints" id="p-ints" hidden>
       <div class="fila tres">
         <div class="caja"><h2>Interrupciones (R4)</h2><div id="interrupciones"></div></div>
         <div class="caja"><h2>Métricas en vivo</h2><div id="metricas"></div></div>
       </div>
     </section>
 
-    <section class="panel" id="p-bitacora" hidden>
+    <section class="panel" role="tabpanel" aria-labelledby="tab-bitacora" id="p-bitacora" hidden>
       <div class="caja">
         <h2>Registro de pasos (bitácora)</h2>
         <div class="tabla alto" id="caja-filas"><table>
