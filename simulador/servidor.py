@@ -13,6 +13,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import socket
 import sys
 import webbrowser
 from dataclasses import asdict
@@ -112,14 +113,43 @@ class Manejador(SimpleHTTPRequestHandler):
             super().log_message(formato, *args)
 
 
+class Servidor(ThreadingHTTPServer):
+    # En Windows, SO_REUSEADDR deja que dos servidores escuchen el mismo puerto sin error
+    # y el navegador termina en el equivocado; sin él, el segundo falla al iniciar.
+    allow_reuse_address = False
+
+
+def puerto_ocupado(puerto: int) -> bool:
+    """¿Ya responde algo en localhost:puerto (IPv4 o IPv6)? p. ej. un http.server olvidado."""
+    for familia, host in ((socket.AF_INET, "127.0.0.1"), (socket.AF_INET6, "::1")):
+        try:
+            with socket.socket(familia, socket.SOCK_STREAM) as s:
+                s.settimeout(0.3)
+                if s.connect_ex((host, puerto)) == 0:
+                    return True
+        except OSError:
+            continue
+    return False
+
+
 def main(argv: list[str] | None = None) -> int:
-    if hasattr(sys.stdout, "reconfigure"):
-        sys.stdout.reconfigure(encoding="utf-8", errors="replace")
+    for flujo in (sys.stdout, sys.stderr):
+        if hasattr(flujo, "reconfigure"):
+            flujo.reconfigure(encoding="utf-8", errors="replace")
     ap = argparse.ArgumentParser(prog="python -m simulador.servidor", description=__doc__.splitlines()[0])
     ap.add_argument("--puerto", type=int, default=8766)
     ap.add_argument("--abrir", action="store_true", help="abre el visor en el navegador")
     args = ap.parse_args(argv)
-    servidor = ThreadingHTTPServer(("127.0.0.1", args.puerto), partial(Manejador, directory=str(VISOR)))
+    aviso = (f"El puerto {args.puerto} ya está en uso (¿quedó abierto otro servidor?). Ciérrelo con Ctrl+C "
+             f"en su terminal o use otro puerto: python -m simulador.servidor --puerto {args.puerto + 1}")
+    if puerto_ocupado(args.puerto):
+        print(aviso, file=sys.stderr)
+        return 1
+    try:
+        servidor = Servidor(("127.0.0.1", args.puerto), partial(Manejador, directory=str(VISOR)))
+    except OSError:
+        print(aviso, file=sys.stderr)
+        return 1
     url = f"http://localhost:{args.puerto}"
     print(f"Visor en {url}  (Ctrl+C para detener)")
     if args.abrir:

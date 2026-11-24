@@ -22,6 +22,8 @@ En Windows use `py` en lugar de `python`. Solo requiere Python 3.10 o superior, 
 | `python -m simulador ESCENARIO --modo resumen` | Solo el resumen: contadores, memoria y métricas |
 | `python -m simulador ESCENARIO --planificador SJF --expropiativo si` | Cualquier parámetro del JSON se puede cambiar desde la línea de comandos |
 
+**Guía rápida de ejecución:** [docs/GUIA_RAPIDA.md](docs/GUIA_RAPIDA.md) (prenderlo paso a paso, controles del visor y errores comunes).
+
 **Manual completo:** [docs/MANUAL_DE_USO.md](docs/MANUAL_DE_USO.md) (parámetros, formato de escenarios y cómo hacer los cambios en vivo).
 
 ## Qué simula
@@ -93,7 +95,7 @@ simulador/          motor (Python, sin dependencias)
 visor/              visor web: configuración + simulación en pestañas
 escenarios/         entradas JSON
 pruebas/            pruebas automáticas
-docs/               manual, matriz de combinaciones, estado y herramientas
+docs/               guía rápida, manual, matriz de combinaciones, estado y herramientas
 ```
 
 ## Integrantes

@@ -57,6 +57,11 @@ class TestServidor(unittest.TestCase):
         self.assertEqual(codigo, 400)
         self.assertIn("exit", cuerpo["error"])
 
+    def test_detecta_el_puerto_ocupado(self):
+        puerto = self.srv.server_address[1]
+        self.assertTrue(servidor.puerto_ocupado(puerto))
+        self.assertEqual(servidor.main(["--puerto", str(puerto)]), 1)
+
     def test_sirve_el_visor(self):
         with urllib.request.urlopen(f"{self.url}/") as r:
             self.assertIn("pantalla-inicio", r.read().decode("utf-8"))

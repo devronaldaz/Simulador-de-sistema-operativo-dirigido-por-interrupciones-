@@ -1,5 +1,7 @@
 # Manual de uso del simulador
 
+> ¿Solo quiere prenderlo? Vea la **[guía rápida de ejecución](GUIA_RAPIDA.md)**: pasos, controles y errores comunes.
+
 ## 1. Cómo correrlo
 
 **Requisito único:** Python 3.10 o superior. No hay dependencias externas.
@@ -18,7 +20,7 @@ cd Simulador-de-sistema-operativo-dirigido-por-interrupciones-
 py -m simulador escenarios/e1_tres_procesos_rr4.json
 ```
 
-En este manual se usa `py`; en Linux y macOS reemplácelo por `python3`.
+En este manual se usa `py`; en Linux y macOS reemplácelo por `python3`. **Todos los comandos se ejecutan desde la carpeta del repositorio**; fuera de ella aparece `No module named simulador`.
 
 ## 2. Las tres formas de verlo
 
@@ -51,10 +53,12 @@ Otros modos: `--modo tick` (un tick por Enter), `--modo auto --velocidad 5` (5 p
 py -m simulador.servidor --abrir
 ```
 
-Abre http://localhost:8766 (otro puerto: `--puerto 8767`; detener con Ctrl+C). El visor tiene dos pantallas, como el ejemplo del profesor:
+Abre http://localhost:8766 (otro puerto: `--puerto 8767`; detener con Ctrl+C). Si el puerto ya lo usa otro servidor, no arranca y lo avisa. El visor tiene dos pantallas, como el ejemplo del profesor:
 
 1. **Configuración.** Se elige un escenario de ejemplo (sus procesos aparecen en una tabla editable: PID, llegada, prioridad, burst-time, tamaño, E/S y guion; *+ Añadir proceso* agrega filas), el **algoritmo de planificación** (FCFS, SJF, Round Robin o Prioridades, con quantum, expropiación, prioridad fija o dinámica y aging) y la **gestión de memoria** (paginación con reemplazo FIFO, LRU, Óptimo o Clock, o asignación contigua con primer, mejor, peor o siguiente ajuste). *Iniciar simulación* la ejecuta.
-2. **Simulación.** Arriba quedan siempre visibles los **algoritmos en uso**, los controles de reproducción y el paso actual con su porqué. El resto está separado en pestañas: *Procesos* (mapa de estados y flujo de la CPU), *Línea de tiempo*, *PCB*, *Memoria* (mapa, MMU, tabla de páginas y TLB), *Interrupciones y métricas* y *Bitácora*. Al reproducir, la página no se desplaza: solo se mueve la tabla de la pestaña abierta. *← Cambiar algoritmos* vuelve a la configuración.
+2. **Simulación.** Arriba quedan siempre visibles los **algoritmos en uso**, los controles de reproducción y el paso actual con su porqué. El resto está separado en pestañas: *Procesos* (mapa de estados y flujo de la CPU), *Línea de tiempo*, *PCB*, *Memoria* (mapa, MMU, tabla de páginas y TLB), *Interrupciones y métricas* y *Bitácora*. Al reproducir, la página no se desplaza: solo se mueve la tabla de la pestaña abierta. *Cambiar algoritmos* vuelve a la configuración.
+
+**Apariencia.** El visor sigue el sistema de diseño de [`design-system/simulador-so/MASTER.md`](../design-system/simulador-so/MASTER.md): tema oscuro por defecto y un botón (☀ / ☾) en la cabecera para el tema claro, útil con proyector; la elección se recuerda en cada navegador. Las fuentes (IBM Plex Sans y JetBrains Mono) se cargan de Google Fonts; sin internet se usan las del sistema.
 
 **Sin servidor:** `py -m simulador ESCENARIO --visor --abrir` abre `visor/index.html` con la traza de ese escenario. La pantalla de configuración muestra entonces los algoritmos de esa traza, pero no puede simular otros. El botón *Cargar traza JSON* abre un archivo generado con `--traza`.
 
@@ -70,7 +74,16 @@ Abre http://localhost:8766 (otro puerto: `--puerto 8767`; detener con Ctrl+C). E
 | Interrupciones y métricas | Contadores por tipo y proceso; utilización, throughput, espera promedio y cambios de contexto en vivo |
 | Registro | Todos los pasos; clic para saltar |
 
-Controles: ◀ ▶ (o flechas del teclado), Reproducir/Pausa (espacio), velocidad de 0,5× a 20×, barra de posición.
+| Control | Botón | Teclado |
+|---|---|---|
+| Paso siguiente / anterior | ▷ / ◁ | → / ← |
+| Primer / último paso | ⏮ / ⏭ | Inicio / Fin |
+| Reproducir / pausar | **Reproducir** | Espacio |
+| Velocidad | lista *Velocidad*, de 0,5× a 20× | — |
+| Ir a un paso | barra de posición, fila de la bitácora o columna de la línea de tiempo | — |
+| Cambiar de pestaña | clic | con el foco en una pestaña: → / ←, Inicio, Fin |
+
+Los problemas frecuentes al prenderlo (carpeta equivocada, puerto ocupado, página 404, versión vieja en caché) están en la sección *Errores comunes* de la [guía rápida](GUIA_RAPIDA.md#6-errores-comunes).
 
 ### 2.3 Resumen y archivo de traza
 
