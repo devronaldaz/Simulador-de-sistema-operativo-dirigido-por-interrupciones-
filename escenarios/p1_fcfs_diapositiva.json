@@ -1,0 +1,24 @@
+{
+  "nombre": "FCFS de la diapositiva: P1=24, P2=3, P3=3 (espera promedio 17)",
+  "config": {
+    "planificador": "FCFS",
+    "marcos": 4
+  },
+  "procesos": [
+    {
+      "pid": "P1",
+      "llegada": 0,
+      "burst": 24
+    },
+    {
+      "pid": "P2",
+      "llegada": 0,
+      "burst": 3
+    },
+    {
+      "pid": "P3",
+      "llegada": 0,
+      "burst": 3
+    }
+  ]
+}

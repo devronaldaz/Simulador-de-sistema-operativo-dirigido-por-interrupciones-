@@ -16,8 +16,8 @@ from .cpu import CPU
 from .disco import Disco
 from .eventos import Agenda
 from .ivt import TablaVectores
-from .memoria import GestorMemoria
-from .planificacion import crear_planificador
+from .memoria import crear_gestor
+from .planificacion import Planificador
 from .planificacion.despachador import Despachador
 from .procesos import GestorProcesos
 from .reloj import Reloj
@@ -32,9 +32,9 @@ class Simulador:
         self.bitacora = Bitacora(self)
         self.cpu = CPU(self)
         self.disco = Disco()
-        self.planificador = crear_planificador(self.config.planificador, self.config.quantum)
+        self.planificador = Planificador(self.config)
         self.procesos = GestorProcesos(self, self.escenario.procesos)
-        self.memoria = GestorMemoria(self, self.config.marcos, self.config.reemplazo)
+        self.memoria = crear_gestor(self)
         self.despachador = Despachador(self)
         self.ivt = TablaVectores()
         self.controlador = ControladorInterrupciones(self)
@@ -63,8 +63,10 @@ class Simulador:
         senal = self.cpu.ejecutar()                                 # F2
         llegadas = self.procesos.llegadas(t)                        # F3
         fines = self.disco.completadas(t)
-        nmi = "NMI" in self.agenda.extraer(t)
-        self.controlador.atender_frontera(senal, llegadas, self.reloj.hay_timer(), fines, nmi)   # F4
+        eventos = self.agenda.extraer(t)
+        nmi = any(e.tipo == "NMI" for e in eventos)
+        kills = [e.pid for e in eventos if e.tipo == "KILL"]
+        self.controlador.atender_frontera(senal, llegadas, self.reloj.hay_timer(), fines, nmi, kills)   # F4
         self.disco.retirar(t)
         self.despachador.despachar()                                # F5
         self.bitacora.cerrar_tick()                                 # F6

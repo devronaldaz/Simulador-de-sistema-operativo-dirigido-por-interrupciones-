@@ -1,0 +1,29 @@
+{
+  "nombre": "SJF de la diapositiva (no expropiativo: espera 4 · con --expropiativo si: espera 3)",
+  "config": {
+    "planificador": "SJF",
+    "marcos": 4
+  },
+  "procesos": [
+    {
+      "pid": "P1",
+      "llegada": 0,
+      "burst": 7
+    },
+    {
+      "pid": "P2",
+      "llegada": 2,
+      "burst": 4
+    },
+    {
+      "pid": "P3",
+      "llegada": 4,
+      "burst": 1
+    },
+    {
+      "pid": "P4",
+      "llegada": 5,
+      "burst": 4
+    }
+  ]
+}

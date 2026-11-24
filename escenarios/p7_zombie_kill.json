@@ -1,0 +1,34 @@
+{
+  "nombre": "Zombie y señal kill: los recursos se retienen hasta que init recoge al proceso",
+  "config": {
+    "planificador": "RR",
+    "quantum": 3,
+    "politica_zombie": "recolector",
+    "recolector_ticks": 3,
+    "marcos": 3
+  },
+  "procesos": [
+    {
+      "pid": "P1",
+      "llegada": 0,
+      "burst": 4
+    },
+    {
+      "pid": "P2",
+      "llegada": 0,
+      "burst": 8
+    },
+    {
+      "pid": "P3",
+      "llegada": 0,
+      "burst": 6
+    }
+  ],
+  "eventos_externos": [
+    {
+      "tick": 5,
+      "tipo": "KILL",
+      "pid": "P3"
+    }
+  ]
+}

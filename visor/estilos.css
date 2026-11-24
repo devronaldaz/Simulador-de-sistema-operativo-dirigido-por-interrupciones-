@@ -1,13 +1,11 @@
 :root {
   --fondo: #f6f7f9; --panel: #ffffff; --texto: #1d2433; --suave: #5b6577; --borde: #d8dde6;
-  --acento: #b5302a; --nuevo: #2f80ed; --listo: #17a2b8; --ejecutando: #27ae60;
-  --bloqueado: #e67e22; --terminado: #c0392b; --resalte: #f39c12;
+  --acento: #b5302a; --resalte: #f39c12;
+  --NUEVO: #2f80ed; --LISTO: #17a2b8; --EJECUTANDO: #27ae60; --BLOQUEADO: #e67e22;
+  --ZOMBIE: #8e44ad; --TERMINADO: #c0392b;
 }
 @media (prefers-color-scheme: dark) {
-  :root {
-    --fondo: #12151c; --panel: #1b2029; --texto: #e6e9ef; --suave: #9aa4b5; --borde: #2c3442;
-    --acento: #e57373;
-  }
+  :root { --fondo: #12151c; --panel: #1b2029; --texto: #e6e9ef; --suave: #9aa4b5; --borde: #2c3442; --acento: #e57373; }
 }
 * { box-sizing: border-box; }
 body { margin: 0; background: var(--fondo); color: var(--texto); font: 14px/1.45 system-ui, sans-serif; }
@@ -15,21 +13,23 @@ header { display: flex; justify-content: space-between; align-items: center; gap
   border-bottom: 2px solid var(--acento); }
 h1 { margin: 0; font-size: 18px; color: var(--acento); }
 h2 { margin: 0 0 8px; font-size: 15px; }
-h3 { margin: 0 0 6px; font-size: 13px; color: var(--suave); text-transform: uppercase; letter-spacing: .04em; }
+h3 { margin: 12px 0 6px; font-size: 12px; color: var(--suave); text-transform: uppercase; letter-spacing: .04em; }
+.nota { font-weight: 400; color: var(--suave); font-size: 12px; }
 #escenario { margin: 2px 0 0; color: var(--suave); }
-.cargar { cursor: pointer; border: 1px solid var(--borde); padding: 6px 10px; border-radius: 6px; background: var(--panel); }
+code { background: var(--fondo); padding: 1px 4px; border-radius: 3px; }
+.cargar { cursor: pointer; border: 1px solid var(--borde); padding: 6px 10px; border-radius: 6px; background: var(--panel); white-space: nowrap; }
 .cargar input { display: none; }
 
 .controles { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; padding: 10px 16px; }
-.controles button { font-size: 14px; padding: 5px 10px; border-radius: 6px; border: 1px solid var(--borde);
+.controles button, select { font-size: 14px; padding: 4px 9px; border-radius: 6px; border: 1px solid var(--borde);
   background: var(--panel); color: var(--texto); cursor: pointer; }
 .controles input[type=range] { flex: 1; min-width: 160px; }
 #posicion { font-variant-numeric: tabular-nums; color: var(--suave); }
 
-main { display: grid; grid-template-columns: minmax(0, 1fr) 340px; gap: 12px; padding: 0 16px; }
-@media (max-width: 900px) { main { grid-template-columns: 1fr; } }
-.mapa, .panel, .registro { background: var(--panel); border: 1px solid var(--borde); border-radius: 8px; padding: 12px; }
-.paneles { display: flex; flex-direction: column; gap: 10px; }
+.fila { display: grid; grid-template-columns: minmax(0, 1.6fr) minmax(280px, 1fr); gap: 12px; padding: 0 16px 12px; }
+@media (max-width: 960px) { .fila { grid-template-columns: 1fr; } }
+.caja { background: var(--panel); border: 1px solid var(--borde); border-radius: 8px; padding: 12px; min-width: 0; }
+.ancho { margin: 0 16px 12px; }
 svg { width: 100%; height: auto; display: block; }
 
 .estado rect { stroke-width: 2.5; fill: var(--panel); }
@@ -48,16 +48,32 @@ svg { width: 100%; height: auto; display: block; }
 .porque .titulo { font-weight: 700; }
 .porque .cambio { color: var(--suave); font-size: 13px; margin-top: 4px; }
 
-.fichas span, .chip { display: inline-block; padding: 2px 9px; margin: 2px; border-radius: 10px;
-  background: var(--texto); color: var(--panel); font-weight: 700; font-size: 12px; }
+.flujo { display: flex; flex-direction: column; gap: 4px; }
+.etapa { border: 1px solid var(--borde); border-radius: 6px; padding: 6px 8px; }
+.etapa.activa { border-color: var(--resalte); box-shadow: 0 0 0 2px var(--resalte) inset; }
+.etapa b { display: block; font-size: 12px; color: var(--suave); text-transform: uppercase; }
+.flecha { text-align: center; color: var(--suave); line-height: 1; }
+.chip { display: inline-block; padding: 1px 8px; margin: 1px; border-radius: 10px; background: var(--texto);
+  color: var(--panel); font-weight: 700; font-size: 12px; }
 .vacio { color: var(--suave); font-style: italic; }
-.marco { display: flex; justify-content: space-between; padding: 3px 0; border-bottom: 1px dashed var(--borde); }
-.marco .carga { color: var(--bloqueado); }
+.mmu { font-family: ui-monospace, Consolas, monospace; font-size: 12.5px; background: var(--fondo); padding: 8px; border-radius: 6px; }
+
 table { width: 100%; border-collapse: collapse; font-size: 12.5px; }
-th, td { text-align: left; padding: 4px 6px; border-bottom: 1px solid var(--borde); vertical-align: top; }
-.contadores td:last-child, .contadores th:last-child { text-align: right; }
-.registro { margin: 12px 16px 24px; }
-.registro .tabla { max-height: 300px; overflow: auto; }
-#filas tr { cursor: pointer; }
-#filas tr.actual { background: color-mix(in srgb, var(--resalte) 22%, transparent); }
-#filas tr.trans td:nth-child(3) { color: var(--resalte); font-weight: 700; }
+th, td { text-align: left; padding: 3px 6px; border-bottom: 1px solid var(--borde); vertical-align: top; white-space: nowrap; }
+.tabla { overflow: auto; max-height: 320px; }
+.tabla.alto { max-height: 360px; }
+#filas td:last-child, #filas td:nth-child(5) { white-space: normal; }
+#filas tr, #pcb tbody tr { cursor: pointer; }
+tr.actual { background: color-mix(in srgb, var(--resalte) 22%, transparent); }
+#filas tr.trans td:nth-child(3), #filas tr.plan td:nth-child(3) { color: var(--resalte); font-weight: 700; }
+td.estado-celda { font-weight: 700; }
+
+.linea { overflow-x: auto; padding-bottom: 4px; }
+.linea table { width: auto; border-collapse: separate; border-spacing: 1px; }
+.linea td, .linea th { padding: 0; border: none; min-width: 18px; height: 18px; text-align: center; font-size: 10px; }
+.linea th.pid { text-align: right; padding-right: 6px; min-width: 40px; font-size: 12px; }
+.linea td.c { border-radius: 2px; opacity: .85; }
+.linea td.ahora { outline: 2px solid var(--resalte); }
+.linea td.int { color: var(--texto); font-weight: 700; }
+.leyenda { margin-top: 6px; font-size: 12px; color: var(--suave); }
+.leyenda span { display: inline-block; width: 12px; height: 12px; border-radius: 2px; vertical-align: middle; margin: 0 4px 0 10px; }

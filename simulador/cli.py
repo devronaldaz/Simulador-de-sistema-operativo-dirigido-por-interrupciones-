@@ -7,12 +7,20 @@ import sys
 import webbrowser
 from pathlib import Path
 
-from .config import ErrorEscenario, cargar_escenario
+from .config import OPCIONES, ErrorEscenario, cargar_escenario
 from .consola import recorrer
 from .metricas import resumen
 from .nucleo import Simulador
 
 RAIZ = Path(__file__).resolve().parent.parent
+
+
+def _bool(texto: str) -> bool:
+    if texto.lower() in ("si", "sí", "true", "1", "yes"):
+        return True
+    if texto.lower() in ("no", "false", "0"):
+        return False
+    raise argparse.ArgumentTypeError("use si o no")
 
 
 def construir_parser() -> argparse.ArgumentParser:
@@ -27,12 +35,13 @@ def construir_parser() -> argparse.ArgumentParser:
     ap.add_argument("--traza", metavar="RUTA", help="guarda la bitácora en JSON")
     ap.add_argument("--visor", action="store_true", help="prepara la traza para visor/index.html")
     ap.add_argument("--abrir", action="store_true", help="con --visor, abre el visor en el navegador")
-    g = ap.add_argument_group("sustituir la configuración del escenario")
-    g.add_argument("--planificador", choices=["RR", "FCFS"])
-    g.add_argument("--quantum", type=int)
-    g.add_argument("--marcos", type=int)
-    g.add_argument("--reemplazo", choices=["LRU", "FIFO"])
-    g.add_argument("--periodo-timer", type=int, dest="periodo_timer")
+    g = ap.add_argument_group("sustituir la configuración del escenario (todas las opciones del JSON)")
+    for nombre, opciones in OPCIONES.items():
+        g.add_argument(f"--{nombre.replace('_', '-')}", dest=nombre, choices=sorted(opciones))
+    for nombre in ("quantum", "aging", "worst_time", "recolector_ticks", "grado_multiprogramacion", "marcos",
+                   "marcos_so", "tamano_marco", "tlb", "periodo_timer", "memoria_total", "memoria_so", "ws_delta"):
+        g.add_argument(f"--{nombre.replace('_', '-')}", dest=nombre, type=int)
+    g.add_argument("--expropiativo", type=_bool, metavar="si|no")
     return ap
 
 
@@ -40,10 +49,10 @@ def main(argv: list[str] | None = None) -> int:
     if hasattr(sys.stdout, "reconfigure"):
         sys.stdout.reconfigure(encoding="utf-8", errors="replace")
     args = construir_parser().parse_args(argv)
+    parametros = {k: v for k, v in vars(args).items()
+                  if k not in ("escenario", "modo", "velocidad", "traza", "visor", "abrir")}
     try:
-        escenario = cargar_escenario(args.escenario, planificador=args.planificador, quantum=args.quantum,
-                                     marcos=args.marcos, reemplazo=args.reemplazo,
-                                     periodo_timer=args.periodo_timer)
+        escenario = cargar_escenario(args.escenario, **parametros)
     except (OSError, ErrorEscenario) as exc:
         print(f"Error en el escenario: {exc}", file=sys.stderr)
         return 2

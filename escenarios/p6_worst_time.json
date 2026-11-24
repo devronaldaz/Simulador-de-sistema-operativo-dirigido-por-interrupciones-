@@ -1,0 +1,26 @@
+{
+  "nombre": "Worst time de 50 (comparar --worst-time-modo rechazar y truncar)",
+  "config": {
+    "planificador": "FCFS",
+    "worst_time": 50,
+    "worst_time_modo": "rechazar",
+    "marcos": 3
+  },
+  "procesos": [
+    {
+      "pid": "P1",
+      "llegada": 0,
+      "burst": 20
+    },
+    {
+      "pid": "P2",
+      "llegada": 0,
+      "burst": 80
+    },
+    {
+      "pid": "P3",
+      "llegada": 0,
+      "burst": 30
+    }
+  ]
+}

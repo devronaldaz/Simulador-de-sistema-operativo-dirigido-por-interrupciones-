@@ -1,0 +1,35 @@
+{
+  "nombre": "Round Robin + prioridades (el pedido del docente)",
+  "config": {
+    "planificador": "RR",
+    "quantum": 3,
+    "prioridad": "fija",
+    "marcos": 4
+  },
+  "procesos": [
+    {
+      "pid": "P1",
+      "llegada": 0,
+      "burst": 6,
+      "prioridad": 3
+    },
+    {
+      "pid": "P2",
+      "llegada": 0,
+      "burst": 5,
+      "prioridad": 1
+    },
+    {
+      "pid": "P3",
+      "llegada": 0,
+      "burst": 4,
+      "prioridad": 2
+    },
+    {
+      "pid": "P4",
+      "llegada": 0,
+      "burst": 5,
+      "prioridad": 1
+    }
+  ]
+}

@@ -17,10 +17,12 @@ class ContadorInterrupciones:
         self.por_proceso = {pid: {t: 0 for t in TipoInt} for pid in [*pids, SISTEMA]}
         # Resultados de la ISR del timer (tabla 4.3-C): A continúa, B expropia, C renueva, D sin proceso
         self.timer_resultados = {"A": 0, "B": 0, "C": 0, "D": 0}
+        self.ultimo_tipo: str | None = None
 
     def contar(self, tipo: TipoInt, pid: str | None) -> int:
         """Registra una interrupción aceptada y devuelve su número (el 'INT #n')."""
         self.total += 1
+        self.ultimo_tipo = tipo.value
         self.por_tipo[tipo] += 1
         self.por_proceso[pid or SISTEMA][tipo] += 1
         return self.total

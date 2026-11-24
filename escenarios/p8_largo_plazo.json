@@ -1,0 +1,31 @@
+{
+  "nombre": "Planificador de largo plazo: grado de multiprogramación 2",
+  "config": {
+    "planificador": "RR",
+    "quantum": 2,
+    "grado_multiprogramacion": 2,
+    "marcos": 3
+  },
+  "procesos": [
+    {
+      "pid": "P1",
+      "llegada": 0,
+      "burst": 3
+    },
+    {
+      "pid": "P2",
+      "llegada": 0,
+      "burst": 3
+    },
+    {
+      "pid": "P3",
+      "llegada": 0,
+      "burst": 3
+    },
+    {
+      "pid": "P4",
+      "llegada": 0,
+      "burst": 3
+    }
+  ]
+}

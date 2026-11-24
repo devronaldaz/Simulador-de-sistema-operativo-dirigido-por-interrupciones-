@@ -10,8 +10,9 @@ class ContadoresE1(unittest.TestCase):
         cls.sim, cls.res = correr("e1_tres_procesos_rr4.json")
 
     def test_por_tipo(self):
-        self.assertEqual(self.res["por_tipo"], {"TIMER": 23, "ES_DMA": 2, "SYSCALL": 7,
-                                                "FALLO_PAG": 1, "EXCEPCION": 1, "NMI": 1})
+        self.assertEqual(self.res["por_tipo"], {"TIMER": 23, "ES_DMA": 2, "SYSCALL": 7, "FALLO_PAG": 1,
+                                                "EXCEPCION": 1, "NMI": 1, "WORST_TIME": 0, "SENAL": 0,
+                                                "PROTECCION": 0})
         self.assertEqual(self.res["interrupciones"], 35)
 
     def test_por_proceso(self):

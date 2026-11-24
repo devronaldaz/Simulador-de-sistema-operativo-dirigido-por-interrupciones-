@@ -1,0 +1,53 @@
+{
+  "nombre": "Memoria contigua con base y límite (comparar --ajuste primer, mejor, peor, siguiente)",
+  "config": {
+    "planificador": "RR",
+    "quantum": 3,
+    "mmu": "contigua",
+    "memoria_total": 65536,
+    "memoria_so": 16384,
+    "ajuste": "primer"
+  },
+  "procesos": [
+    {
+      "pid": "P1",
+      "llegada": 0,
+      "burst": 5,
+      "tamano": 12288
+    },
+    {
+      "pid": "P2",
+      "llegada": 0,
+      "burst": 3,
+      "tamano": 20480
+    },
+    {
+      "pid": "P3",
+      "llegada": 0,
+      "burst": 6,
+      "tamano": 8192
+    },
+    {
+      "pid": "P4",
+      "llegada": 1,
+      "burst": 4,
+      "tamano": 16384
+    },
+    {
+      "pid": "P5",
+      "llegada": 2,
+      "burst": 2,
+      "tamano": 12288
+    },
+    {
+      "pid": "P6",
+      "llegada": 3,
+      "tamano": 4096,
+      "guion": [
+        "cpu:0",
+        "cpu:@9000",
+        "exit:0"
+      ]
+    }
+  ]
+}

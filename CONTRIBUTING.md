@@ -32,7 +32,11 @@ python -m simulador escenarios/e1_tres_procesos_rr4.json --modo resumen
 
 La prueba dorada debe seguir en verde. Si un cambio altera **a propósito** la traza de E1, regenera la traza esperada con `node docs/herramientas/exportar_dorada.js` solo después de actualizar la herramienta de referencia, y explícalo en el PR.
 
-## Agregar una política nueva
+## Agregar algo nuevo (un solo lugar de registro)
 
-- **Planificador:** crea `simulador/planificacion/<nombre>.py` heredando de `Planificador` y regístralo en `planificacion/__init__.py` y en `config.PLANIFICADORES`.
-- **Reemplazo:** agrega una función a `memoria/reemplazo.py` y regístrala en `POLITICAS` y en `config.REEMPLAZOS`.
+- **Algoritmo de planificación:** una entrada en `ALGORITMOS` de `simulador/planificacion/base.py` (criterio, quantum, expropiativo). Config, CLI y visor lo leen de ahí.
+- **Política de reemplazo:** una función en `simulador/memoria/reemplazo.py`, registrada en `POLITICAS` y `CRITERIOS`.
+- **Estado o transición:** el valor en `Estado` y la fila en `TRANSICIONES` (`simulador/modelos.py`); para dibujarlo, una posición en `POS` de `visor/visor.js`.
+- **Tipo de interrupción:** el valor en `TipoInt`, la entrada en `ivt.ENTRADAS` y su ISR en `isr.py`.
+
+Detalles y ejemplos en [docs/MANUAL_DE_USO.md](docs/MANUAL_DE_USO.md), sección 6.

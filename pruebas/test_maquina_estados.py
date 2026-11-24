@@ -28,7 +28,14 @@ class MaquinaDeEstados(unittest.TestCase):
         sim = Simulador(desde_dict(MINIMO))
         p = sim.procesos.pcbs[0]          # sigue en NUEVO
         with self.assertRaises(TransicionInvalida):
-            sim.procesos.terminar(p, "NUEVO → TERMINADO no existe en el mapa")
+            sim.procesos.poner_en_cpu(p, "[]", "NUEVO → EJECUTANDO no existe en el mapa")
+
+    def test_zombie_pasa_por_t7_y_t8(self):
+        sim, _ = correr("p7_zombie_kill.json")
+        ids = [p.transicion["id"] for p in sim.bitacora.pasos if p.transicion]
+        self.assertEqual(ids.count("T7"), 3)
+        self.assertEqual(ids.count("T8"), 3)
+        self.assertNotIn("T6", ids)
 
     def test_el_escenario_original_no_se_modifica(self):
         esc = desde_dict(MINIMO)

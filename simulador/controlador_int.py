@@ -5,7 +5,7 @@ prioridad, las CUENTA y las entrega a su ISR a través de la tabla de vectores.
 
 Orden de servicio dentro de un tick (tabla 4.3):
   1. síncronas de la instrucción (fallo, syscall, excepción)
-  2. llegadas de procesos (INT 0x80 spawn emitida por init)
+  2. llegadas de procesos (INT 0x80 spawn emitida por init) y señales kill
   3. NMI (anidada dentro de la ISR en curso si la hay)
   4. IRQ0 (timer)
   5. IRQ14 (disco/DMA), que espera en el IRR hasta el EOI de la anterior
@@ -29,12 +29,14 @@ class ControladorInterrupciones:
         self.nmi_pendiente = False
 
     def atender_frontera(self, sincrona: Senal | None, llegadas: list[PCB], hay_timer: bool,
-                         fines_disco: list[PeticionDisco], nmi: bool) -> None:
+                         fines_disco: list[PeticionDisco], nmi: bool, kills: list[str] | None = None) -> None:
         self.nmi_pendiente = nmi
         if sincrona:
             self._aceptar(sincrona.tipo, sincrona.pid, sincrona.vector, sincrona.datos)
         for p in llegadas:
             self._aceptar(TipoInt.SYSCALL, p.pid, "0x80", {"servicio": "spawn"})
+        for pid in kills or []:
+            self._aceptar(TipoInt.SENAL, pid, "SIG", {})
 
         self.irr = (["IRQ0"] if hay_timer else []) + ["IRQ14"] * len(fines_disco)
         if hay_timer and "IRQ0" not in self.imr:
